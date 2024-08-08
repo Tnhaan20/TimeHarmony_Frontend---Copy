@@ -85,45 +85,55 @@
         <div class="w-full justify-between flex">
           <h2 class="text-2xl font-semibold mb-4">Tổng Quan Lợi Nhuận</h2>
           
-          <div class="relative">
+          
+     <div class="relative">
     <span @click="toggleFilter" class="text-xl h-8 cursor-pointer hover-underline-animation inline-block">
       <i class="fa fa-filter"></i> Lọc dữ liệu
     </span>
-    <div v-if="showFilter" class="filter-panel mt-2 p-4 back rounded-md absolute right-1 z-10 shadow-lg" style="min-width: 300px;">
+    <div v-if="showFilter" class="filter-panel mt-2 p-4 back rounded-md absolute right-2 z-10 shadow-lg" style="min-width: 400px;">
       <div class="space-y-4">
-        <div v-for="(filter, type) in filters" :key="type" class="flex flex-col">
-          <label class="container flex justify-start items-center text-center gap-2">
-            <input type="checkbox" v-model="filter.active" @change="handleFilterChange(type)">
+        <div class="flex flex-col">
+          <label class="container flex justify-start items-center text-center gap-2 mb-2">
+            <input type="checkbox" v-model="selectedFilter" value="yearMonthDay" @change="handleFilterChange">
             <svg viewBox="0 0 64 64" height="1em">
               <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
             </svg>
-            <span>{{ type.charAt(0).toUpperCase() + type.slice(1) }}</span>
+            <span>Year, Month, Day</span>
           </label>
-          <div v-if="filter.active" class="flex space-x-2">
+          <div v-if="selectedFilter.includes('yearMonthDay')" class="flex space-x-2">
             <div class="form__group field flex-1">
-              <input 
-                type="number" 
-                class="form__field"
-                v-model="filter.min" 
-                :placeholder="`Min ${type}`"
-                @input="validateInput(type, 'min')"
-              >
-              <label :for="`min_${type}`" class="form__label">Min</label>
+              <VueDatePicker class="pt-2" v-model="filters.yearMonthDay.from" placeholder="Từ ngày" :format="'yyyy-MM-dd'" :max-date="new Date()" @input="validateYearMonthDayInput('from')"></VueDatePicker>
+              <label for="min_yearMonthDay_date" class="form__label">From (yyyy-mm-dd)</label>
             </div>
             <div class="form__group field flex-1">
-              <input 
-                type="number" 
-                class="form__field"
-                v-model="filter.max" 
-                :placeholder="`Max ${type}`"
-                @input="validateInput(type, 'max')"
-              >
-              <label :for="`max_${type}`" class="form__label">Max</label>
+              <VueDatePicker class="pt-2" v-model="filters.yearMonthDay.to" placeholder="Đến ngày" :format="'yyyy-MM-dd'" :min-date="filters.yearMonthDay.from" :max-date="new Date()" @input="validateYearMonthDayInput('to')"></VueDatePicker>
+              <label for="max_yearMonthDay_date" class="form__label">To (yyyy-mm-dd)</label>
             </div>
           </div>
         </div>
+        <div class="flex flex-col">
+          <label class="container flex justify-start items-center text-center gap-2 mb-2">
+            <input type="checkbox" v-model="selectedFilter" value="yearMonth" @change="handleFilterChange">
+            <svg viewBox="0 0 64 64" height="1em">
+              <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+            </svg>
+            <span>Year, Month</span>
+          </label>
+          <div v-if="selectedFilter.includes('yearMonth')" class="flex space-x-2">
+            <div class="form__group field flex-1">
+              <VueDatePicker class="pt-2" v-model="filters.yearMonth.from" placeholder="Từ tháng" :format="'yyyy-MM'" :min-date="new Date(new Date().getFullYear(), new Date().getMonth() - 11, 1)" :max-date="new Date()" @input="validateYearMonthInput('from')"></VueDatePicker>
+              <label for="min_yearMonth_date" class="form__label">From (yyyy-mm)</label>
+            </div>
+            <div class="form__group field flex-1">
+              <VueDatePicker class="pt-2" v-model="filters.yearMonth.to" placeholder="Đến tháng" :format="'yyyy-MM'" :min-date="filters.yearMonth.from" :max-date="new Date()" @input="validateYearMonthInput('to')"></VueDatePicker>
+              <label for="max_yearMonth_date" class="form__label">To (yyyy-mm)</label>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <button @click="applyFilters" class="mt-4 th-p-btn px-4 py-2 rounded">Áp dụng</button>
+        </div>
       </div>
-      <button @click="applyFilters" class="mt-4 th-p-btn px-4 py-2 rounded w-full">Áp dụng</button>
     </div>
   </div>
         </div>
@@ -1030,79 +1040,77 @@ const profitChart = ref(null);
 
 //Chart filter
 const showFilter = ref(false);
+const selectedFilter = ref([]);
 const filters = reactive({
-  day: { active: false, min: null, max: null },
-  month: { active: false, min: null, max: null },
-  year: { active: false, min: null, max: null }
+  yearMonthDay: {
+    from: null,
+    to: null
+  },
+  yearMonth: {
+    from: null,
+    to: null
+  }
 });
 
 const toggleFilter = () => {
   showFilter.value = !showFilter.value;
 };
 
-const handleFilterChange = (type) => {
-  if (type === 'day') {
-    if (filters.day.active) {
-      filters.year.active = false;
-    } else {
-      filters.month.active = false;
-    }
-  } else if (type === 'month') {
-    if (!filters.month.active) {
-      filters.day.active = false;
-    }
-  } else if (type === 'year') {
-    if (filters.year.active && !filters.day.active && !filters.month.active) {
-      // Cho phép chọn năm mà không cần chọn ngày hoặc tháng
-    } else if (filters.year.active && filters.day.active && !filters.month.active) {
-      // Nếu chọn năm và ngày mà không chọn tháng, hủy chọn năm
-      filters.year.active = false;
-    }
+const handleFilterChange = () => {
+  if (selectedFilter.value.length > 1) {
+    const lastSelectedFilter = selectedFilter.value[selectedFilter.value.length - 1];
+    selectedFilter.value = [lastSelectedFilter];
   }
-  resetInputs(type);
+
+  if (!selectedFilter.value.includes('yearMonthDay')) {
+    filters.yearMonthDay.from = null;
+    filters.yearMonthDay.to = null;
+  }
+
+  if (!selectedFilter.value.includes('yearMonth')) {
+    filters.yearMonth.from = null;
+    filters.yearMonth.to = null;
+  }
 };
 
-const resetInputs = (type) => {
-  filters[type].min = null;
-  filters[type].max = null;
-};
-
-const validateInput = (type, minOrMax) => {
-  const value = filters[type][minOrMax];
+const validateYearMonthDayInput = (type) => {
+  const dateValue = new Date(filters.yearMonthDay[type]);
   const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
 
-  if (value === null || value === '') {
-    return; // Allow empty input
-  }
-
-  if (type === 'day') {
-    let maxDays;
-    if (filters.month.active && filters.month[minOrMax]) {
-      const year = filters.year.active ? (filters.year[minOrMax] || currentYear) : currentYear;
-      maxDays = new Date(year, filters.month[minOrMax], 0).getDate();
-    } else {
-      maxDays = 31; // Assume maximum days if month is not specified
+  if (type === 'from') {
+    if (dateValue > currentDate) {
+      filters.yearMonthDay.from = currentDate.toISOString().slice(0, 10);
     }
-    filters[type][minOrMax] = Math.min(Math.max(parseInt(value) || 1, 1), maxDays);
-  } else if (type === 'month') {
-    filters[type][minOrMax] = Math.min(Math.max(parseInt(value) || 1, 1), 12);
-  } else if (type === 'year') {
-    filters[type][minOrMax] = Math.min(parseInt(value) || currentYear, currentYear);
+  } else {
+    if (filters.yearMonthDay.from && new Date(filters.yearMonthDay.to) < new Date(filters.yearMonthDay.from)) {
+      filters.yearMonthDay.to = filters.yearMonthDay.from;
+    }
+  }
+};
+
+const validateYearMonthInput = (type) => {
+  const dateValue = new Date(filters.yearMonth[type]);
+  const currentDate = new Date();
+
+  if (type === 'from') {
+    if (dateValue.getFullYear() < currentDate.getFullYear() || (dateValue.getFullYear() === currentDate.getFullYear() && dateValue.getMonth() < currentDate.getMonth())) {
+      filters.yearMonth.from = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+    }
+  } else {
+    if (filters.yearMonth.from && new Date(filters.yearMonth.to) < new Date(filters.yearMonth.from)) {
+      filters.yearMonth.to = filters.yearMonth.from;
+    }
   }
 };
 
 const applyFilters = () => {
-  const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
-    if (value.active) {
-      acc[key] = { min: value.min, max: value.max };
-    }
-    return acc;
-  }, {});
+  const activeFilters = {
+    yearMonthDay: selectedFilter.value.includes('yearMonthDay') ? filters.yearMonthDay : null,
+    yearMonth: selectedFilter.value.includes('yearMonth') ? filters.yearMonth : null
+  };
   console.log('Applied filters:', activeFilters);
   // Ở đây bạn sẽ gọi hàm để áp dụng bộ lọc vào dữ liệu của bạn
 };
-
 //Chart filter
 
 const selectedTransaction = ref(null);
@@ -1808,7 +1816,7 @@ const formatDate = (dateString) => {
 
 .filter-panel {
   width: 100%;
-  max-width: 300px;
+  max-width: 100px;
 }
 
 .back{
