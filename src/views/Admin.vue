@@ -82,7 +82,51 @@
     <main class="flex-1 p-6 overflow-y-auto">
       <!-- Tổng quan lợi nhuận -->
       <section v-if="currentSection === 'profit-overview'" class="mb-6">
-        <h2 class="text-2xl font-semibold mb-4">Tổng Quan Lợi Nhuận</h2>
+        <div class="w-full justify-between flex">
+          <h2 class="text-2xl font-semibold mb-4">Tổng Quan Lợi Nhuận</h2>
+          
+          <div class="relative">
+    <span @click="toggleFilter" class="text-xl h-8 cursor-pointer hover-underline-animation inline-block">
+      <i class="fa fa-filter"></i> Lọc dữ liệu
+    </span>
+    <div v-if="showFilter" class="filter-panel mt-2 p-4 back rounded-md absolute right-1 z-10 shadow-lg" style="min-width: 300px;">
+      <div class="space-y-4">
+        <div v-for="(filter, type) in filters" :key="type" class="flex flex-col">
+          <label class="container flex justify-start items-center text-center gap-2">
+            <input type="checkbox" v-model="filter.active" @change="handleFilterChange(type)">
+            <svg viewBox="0 0 64 64" height="1em">
+              <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+            </svg>
+            <span>{{ type.charAt(0).toUpperCase() + type.slice(1) }}</span>
+          </label>
+          <div v-if="filter.active" class="flex space-x-2">
+            <div class="form__group field flex-1">
+              <input 
+                type="number" 
+                class="form__field"
+                v-model="filter.min" 
+                :placeholder="`Min ${type}`"
+                @input="validateInput(type, 'min')"
+              >
+              <label :for="`min_${type}`" class="form__label">Min</label>
+            </div>
+            <div class="form__group field flex-1">
+              <input 
+                type="number" 
+                class="form__field"
+                v-model="filter.max" 
+                :placeholder="`Max ${type}`"
+                @input="validateInput(type, 'max')"
+              >
+              <label :for="`max_${type}`" class="form__label">Max</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button @click="applyFilters" class="mt-4 th-p-btn px-4 py-2 rounded w-full">Áp dụng</button>
+    </div>
+  </div>
+        </div>
         <div class="grid grid-cols-3 gap-4 mb-6">
           <div class="back p-4 rounded-lg shadow">
             <p class="text-xl font-medium">Doanh Thu Tổng: {{ currency(totalRevenue) }}</p>
@@ -859,7 +903,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { ref, computed, onMounted, watch, nextTick, reactive } from "vue";
 import { useAdminStore } from "../stores/admin";
 import Chart from 'chart.js/auto';
 import { useChatStore } from "../stores/chat";
@@ -983,6 +1027,83 @@ const revenueChart = ref(null);
 const costChart = ref(null);
 const profitChart = ref(null);
 // Chart variable
+
+//Chart filter
+const showFilter = ref(false);
+const filters = reactive({
+  day: { active: false, min: null, max: null },
+  month: { active: false, min: null, max: null },
+  year: { active: false, min: null, max: null }
+});
+
+const toggleFilter = () => {
+  showFilter.value = !showFilter.value;
+};
+
+const handleFilterChange = (type) => {
+  if (type === 'day') {
+    if (filters.day.active) {
+      filters.year.active = false;
+    } else {
+      filters.month.active = false;
+    }
+  } else if (type === 'month') {
+    if (!filters.month.active) {
+      filters.day.active = false;
+    }
+  } else if (type === 'year') {
+    if (filters.year.active && !filters.day.active && !filters.month.active) {
+      // Cho phép chọn năm mà không cần chọn ngày hoặc tháng
+    } else if (filters.year.active && filters.day.active && !filters.month.active) {
+      // Nếu chọn năm và ngày mà không chọn tháng, hủy chọn năm
+      filters.year.active = false;
+    }
+  }
+  resetInputs(type);
+};
+
+const resetInputs = (type) => {
+  filters[type].min = null;
+  filters[type].max = null;
+};
+
+const validateInput = (type, minOrMax) => {
+  const value = filters[type][minOrMax];
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+
+  if (value === null || value === '') {
+    return; // Allow empty input
+  }
+
+  if (type === 'day') {
+    let maxDays;
+    if (filters.month.active && filters.month[minOrMax]) {
+      const year = filters.year.active ? (filters.year[minOrMax] || currentYear) : currentYear;
+      maxDays = new Date(year, filters.month[minOrMax], 0).getDate();
+    } else {
+      maxDays = 31; // Assume maximum days if month is not specified
+    }
+    filters[type][minOrMax] = Math.min(Math.max(parseInt(value) || 1, 1), maxDays);
+  } else if (type === 'month') {
+    filters[type][minOrMax] = Math.min(Math.max(parseInt(value) || 1, 1), 12);
+  } else if (type === 'year') {
+    filters[type][minOrMax] = Math.min(parseInt(value) || currentYear, currentYear);
+  }
+};
+
+const applyFilters = () => {
+  const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+    if (value.active) {
+      acc[key] = { min: value.min, max: value.max };
+    }
+    return acc;
+  }, {});
+  console.log('Applied filters:', activeFilters);
+  // Ở đây bạn sẽ gọi hàm để áp dụng bộ lọc vào dữ liệu của bạn
+};
+
+//Chart filter
 
 const selectedTransaction = ref(null);
 const greeting = ref("");
@@ -1684,6 +1805,11 @@ const formatDate = (dateString) => {
 </script>
 
 <style scoped>
+
+.filter-panel {
+  width: 100%;
+  max-width: 300px;
+}
 
 .back{
   background: linear-gradient(to bottom, #3b3638, #40413a);
