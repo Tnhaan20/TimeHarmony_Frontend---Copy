@@ -1,6 +1,5 @@
 <template>
   <div class="h-screen">
-    
     <div v-if="isLoading" class="overlay">
       <div class="loader-container">
         <div class="loader">
@@ -21,7 +20,7 @@
           <li class="mb-4">
             <a href="#" @click.prevent="currentSection = 'profit-overview'" 
                :class="{'text-primary': currentSection === 'profit-overview'}">
-              Tổng quan lợi nhuận
+              Tổng Quan Lợi Nhuận
             </a>
           </li>
           <li class="mb-4">
@@ -45,7 +44,7 @@
           <li class="mb-4">
             <a href="#" @click.prevent="currentSection = 'products'"
                :class="{'text-primary': currentSection === 'products'}">
-              Danh Sách Sản Phẩm
+               Danh Sách Đồng Hồ Được Bán
             </a>
           </li>
           <li class="mb-4">
@@ -74,8 +73,8 @@
           </li>
         </ul>
       </nav>
-      <span class="ml-24  hover-underline-animation  cursor-pointer">
-            <i @click="logout" class="fa fa-sign-out"></i> Đăng xuất
+      <span @click="logout" class="ml-24  hover-underline-animation  cursor-pointer">
+            <i class="fa fa-sign-out"></i> Đăng xuất
       </span>
     </aside>
 
@@ -393,7 +392,7 @@
 
       <!-- Quản trị Danh Sách sản phẩm -->
       <section v-if="currentSection === 'products'" class="mb-6">
-        <h2 class="text-2xl font-semibold mb-4">Danh Sách Sản Phẩm</h2>
+        <h2 class="text-2xl font-semibold mb-4">Danh Sách Đồng Hồ Được Bán</h2>
         <div class="ui-input-container mb-4">
           <input
             required
@@ -922,6 +921,8 @@ const formatBoxDate = (date) => {
 }
 
 const logout = () => {
+  console.log(1);
+  
    useAuthStore().logout().then(
     window.location.replace('/')
   )
@@ -1545,7 +1546,7 @@ const createOverviewChart = () => {
   overviewChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', '2024', 'T9', 'T10', 'T11', 'T12'],
+      labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
       datasets: [
         {
           label: 'Doanh Thu Tổng',
