@@ -1,6 +1,8 @@
 <template>
   
-
+  <span @click="useAuthStore().logout()" class="ml-24  hover-underline-animation  cursor-pointer">
+            <i  class="fa fa-sign-out"></i> Đăng xuất
+      </span>
   <div class=" mx-auto p-4">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold text-primary">Kiểm duyệt và thẩm định đồng hồ</h1>

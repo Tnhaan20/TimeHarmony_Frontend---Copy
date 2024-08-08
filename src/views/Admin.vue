@@ -74,8 +74,8 @@
           </li>
         </ul>
       </nav>
-      <span class="ml-24  hover-underline-animation  cursor-pointer">
-            <i @click="logout" class="fa fa-sign-out"></i> Đăng xuất
+      <span @click="logout" class="ml-24  hover-underline-animation  cursor-pointer">
+            <i  class="fa fa-sign-out"></i> Đăng xuất
       </span>
     </aside>
 
