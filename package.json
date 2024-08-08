@@ -1,0 +1,50 @@
+{
+  "name": "time-harmony-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@cloudinary/url-gen": "^1.19.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@healerlab/vue3-facebook-login": "^0.1.7",
+    "@jamescoyle/vue-icon": "github:jamescoyle/vue-icon",
+    "@mdi/font": "^7.4.47",
+    "@mdi/js": "^7.4.47",
+    "@mui/icons-material": "^5.15.18",
+    "@mui/material": "^5.15.18",
+    "@supabase/supabase-js": "^2.44.4",
+    "@vueform/slider": "^2.1.10",
+    "@vuepic/vue-datepicker": "^9.0.1",
+    "axios": "^1.6.8",
+    "chart.js": "^4.4.3",
+    "cloudinary": "^2.2.0",
+    "flowbite": "^2.3.0",
+    "flowbite-vue": "^0.1.5",
+    "js-cookie": "^3.0.5",
+    "mitt": "^3.0.1",
+    "pinia": "^2.1.7",
+    "primevue": "^3.52.0",
+    "vue": "^3.4.34",
+    "vue-chartjs": "^5.3.1",
+    "vue-draggable-next": "^2.2.1",
+    "vue-google-oauth2": "^1.5.10",
+    "vue-router": "^4.3.2",
+    "vue3-google-login": "^2.0.26",
+    "vuedraggable": "^4.1.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "sass": "^1.77.4",
+    "tailwindcss": "^3.4.7",
+    "vite": "^5.2.0"
+  }
+}
