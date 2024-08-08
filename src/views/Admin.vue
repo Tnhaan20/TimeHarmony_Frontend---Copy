@@ -62,7 +62,7 @@
           <li class="mb-4">
             <a href="#" @click.prevent="currentSection = 'shipping'"
                :class="{'text-primary': currentSection === 'shipping'}">
-              Danh sách đơn giao
+              Phân đơn cho shipper
             </a>
           </li>
           <li class="mb-4">
@@ -676,7 +676,7 @@
 
       <!-- Quản trị shipping -->
       <section v-if="currentSection === 'shipping'" class="mb-6">
-        <h2 class="text-2xl font-semibold mb-4">Giao đơn cho shipper</h2>
+        <h2 class="text-2xl font-semibold mb-4">Phân đơn cho shipper</h2>
         <div class="overflow-x-auto back p-4 rounded-lg shadow">
             <table class="table w-full">
               <thead class="bg-gray-200">

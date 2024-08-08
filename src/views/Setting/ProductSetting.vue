@@ -110,6 +110,9 @@
                 <td class="py-4 px-2">
                   <button v-if="list.state === 3" class="hover-underline-animation" @click="setShip(list.watch_id, watchOrderDetails[list.watch_id][0])">Đóng gói và giao hàng</button>
                 </td>
+                <td class="py-4 px-2">
+                  <button v-if="list.state === 3" class="hover-underline-animation" @click="setShip(list.watch_id, watchOrderDetails[list.watch_id][0])">Huỷ giao hàng</button>
+                </td>
               </tr>
             </tbody>
           </table>
