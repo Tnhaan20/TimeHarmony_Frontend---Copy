@@ -1,6 +1,8 @@
 <template>
   
-
+  <span @click="useAuthStore().logout()" class="ml-24  hover-underline-animation  cursor-pointer">
+            <i  class="fa fa-sign-out"></i> Đăng xuất
+      </span>
   <div class=" mx-auto p-4">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold text-primary">Kiểm duyệt và thẩm định đồng hồ</h1>
@@ -65,7 +67,8 @@
     <!-- Approval Confirmation Modal -->
     <div v-if="showApproveModal" class="fixed inset-0 z-50 flex items-center justify-center back bg-opacity-50">
       <div class="bg-[#1b1b1b] p-6 shadow-lg w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto">
-        <h2 class="text-lg font-semibold mb-4">Xác nhận Duyệt</h2>
+        <h2 class="text-lg font-semibold mb-4">Xác nhận Duyệt <br>{{ draggedItem.title }}</h2>
+        <span>ID:{{ draggedItem.id }}</span>
         <div class="form-content mb-6">
           <div class="form__group field w-full">
             <input
@@ -99,6 +102,42 @@
               :class="{ active: isFocused }"
             >Mô tả</label>
         </div>
+        <div class="mydict">
+          <div class="form">
+            <label class="mb-3 text-[#9b9b9b]">Giới tính</label>
+            <div class="select pb-4 gender-select">
+              <label>
+                <input
+                  type="radio"
+                  name="radio"
+                  checked
+                  @click="unisexGender"
+                  id="defaut-gender"
+                  value="Unisex"
+                />
+                <span class="select-op">Phi giới</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="radio"
+                  @click="maleGender"
+                  value="Male"
+                />
+                <span class="select-op">Nam</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="radio"
+                  @click="femaleGender"
+                  value="Female"
+                />
+                <span class="select-op">Nữ</span>
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
         <div class="flex flex-col md:flex-row gap-6 overflow-y-auto">
       <!-- Left Column -->
@@ -115,24 +154,152 @@
             <input type="text" class="form__field" placeholder="Tính năng" />
             <label class="form__label">Tính năng</label>
           </div>
+        </div><div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Hoạt động</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Chức năng</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Động cơ</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Kháng nước</label>
+          </div>
         </div>
         <!-- Add more fields for the left column -->
 
       <!-- Right Column -->
-        <h3 class="text-xl mb-4">Thuộc tính</h3>
+        <h3 class="text-xl mb-4">Quay số</h3>
         <div class="form-content mb-4">
           <div class="form__group field">
             <input  type="text" class="form__field" placeholder="Thương hiệu" />
-            <label class="form__label">Thương hiệu</label>
+            <label class="form__label">Loại quay số</label>
           </div>
         </div>
         <div class="form-content mb-4">
           <div class="form__group field">
             <input type="text" class="form__field" placeholder="Series" />
-            <label class="form__label">Series</label>
+            <label class="form__label">Màu sắc</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Pha lê</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Nhà sản xuất thứ hai</label>
           </div>
         </div>
         <!-- Add more fields for the right column -->
+        <h3 class="text-xl mb-4">Dây đeo</h3>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Màu sắc</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Loại dây</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Móc cài</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Vòng đeo</label>
+          </div>
+        </div>
+        <h3 class="text-xl mb-4">Vỏ</h3>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Khung viền</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Chất liệu khung viền</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Mặt sau</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Kích thước</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Hình dạng vỏ</label>
+          </div>
+        </div>
+        <h3 class="text-xl mb-4">Thuộc tính</h3>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Thương hiệu</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Dòng sản phẩm</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Mẫu</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Phong cách</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Lớp phụ</label>
+          </div>
+        </div>
+        <div class="form-content mb-4">
+          <div class="form__group field">
+            <input type="text" class="form__field" placeholder="Tính năng" />
+            <label class="form__label">Nhãn thực hiện</label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -573,5 +740,115 @@ const formatPriceVND = (price) => {
 .ui-input-icon svg {
   width: 20px;
   height: 20px;
+}
+
+
+.select {
+  display: flex;
+  flex-direction: row;
+}
+
+.mydict:hover label {
+  color: var(--secondary);
+}
+
+.mydict .form {
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.mydict input[type="radio"] {
+  clip: rect(0 0 0 0);
+  clip-path: inset(100%);
+  height: 1px;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.mydict input[type="radio"]:checked + span {
+  box-shadow: 0 0 0 0.0625em #ffbd59;
+  background-color: #5232003a;
+  z-index: 1;
+  color: #ffbd59;
+}
+
+label .select-op {
+  display: block;
+  cursor: pointer;
+  padding: 0.375em 0.75em;
+  position: relative;
+  margin-left: 0.0625em;
+  box-shadow: 0 0 0 0.0625em #b5bfd9;
+  letter-spacing: 0.05em;
+  color: #fff;
+  text-align: center;
+  transition: background-color 0.5s ease;
+}
+
+@media (max-width: 768px) {
+  .radio-inputs {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .radio-inputs {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .radio-inputs .radio .name {
+    padding: 0.15rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .radio-inputs {
+    width: 100%;
+    font-size: 10px;
+  }
+
+  .radio-inputs .radio .name {
+    padding: 0.1rem;
+  }
+}
+
+.radio-inputs .radio {
+  flex: 1 1 auto;
+}
+
+.radio-inputs .radio input {
+  display: none;
+}
+
+.radio-inputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  color: var(--secondary);
+  transition: all 0.15s ease-in-out;
+}
+
+.radio-inputs .radio input:checked + .name {
+  background-color: var(--primary);
+  color: black;
+}
+
+.radio-inputs:focus {
+  display: flex;
+  border: 1px solid var(--secondary);
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 0.25rem;
+  width: 300px;
+  font-size: 14px;
 }
 </style>
