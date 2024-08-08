@@ -20,7 +20,7 @@
           <li class="mb-4">
             <a href="#" @click.prevent="currentSection = 'profit-overview'" 
                :class="{'text-primary': currentSection === 'profit-overview'}">
-              Tổng Quan Lợi Nhuận
+              Tổng Quan Thông Tin
             </a>
           </li>
           <li class="mb-4">
@@ -82,13 +82,19 @@
     <main class="flex-1 p-6 overflow-y-auto">
       <!-- Tổng quan lợi nhuận -->
       <section v-if="currentSection === 'profit-overview'" class="mb-6">
-        <div class="w-full justify-between flex">
+        <div class="back w-full p-4 rounded-lg shadow">
+          <h2 class="flex text-2xl font-semibold justify-center">Top 3 Hãng Được Đăng Bán Nhiều Nhất</h2>
+          <ol>
+            <li class="w-full flex justify-center p-1 text-xl" v-for="(item, index) in topThreeWatch" :key="item.brand">
+              {{ index + 1 }}. {{ item.brand }} - {{ item[""] }} chiếc
+            </li>
+          </ol>
+        </div>
+        <div class="w-full justify-between flex p-5">
           <h2 class="text-2xl font-semibold mb-4">Tổng Quan Lợi Nhuận</h2>
-          
-          
      <div class="relative">
     <span @click="toggleFilter" class="text-xl h-8 cursor-pointer hover-underline-animation inline-block">
-      <i class="fa fa-filter"></i> Lọc dữ liệu
+      <i class="fa fa-filter"></i> Lọc dữ liệu biểu đồ doanh thu
     </span>
     <div v-if="showFilter" class="filter-panel mt-2 p-4 back rounded-md absolute right-2 z-10 shadow-lg" style="min-width: 400px;">
       <div class="space-y-4">
@@ -137,7 +143,8 @@
     </div>
   </div>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-6">
+       
+        <div class="grid grid-cols-3 gap-4 mt-5 mb-6">
           <div class="back p-4 rounded-lg shadow">
             <p class="text-xl font-medium">Doanh Thu Tổng: {{ currency(totalRevenue) }}</p>
           </div>
@@ -1013,9 +1020,10 @@ const roleLabels = {
 };
 
 
-
 // Initialize the store
 const adminStore = useAdminStore();
+
+
 
 // State variables
 const userId = ref("");
@@ -1030,6 +1038,7 @@ const qWatches = ref('');
 const qPendingWatches = ref('')
 const qOrders = ref('');
 const nOrders = ref('');
+const topThree = ref('')
 
 // Chart
 const overviewChart = ref(null);
@@ -1227,6 +1236,7 @@ watch(currentSection, (newSection, oldSection) => {
 onMounted(async () => {
   try {
     date.value = null
+    await adminStore.getTopThreeWatch();
     await adminStore.getMembers();
     await adminStore.getWatches();
     await adminStore.getOrders();
@@ -1272,6 +1282,16 @@ const getShipOrder = computed(() => {
     order.state === 'PENDING'
   );
 });
+//Get top three watch API
+const topThreeWatch = ref([]);
+
+watch(
+  () => adminStore.topThreeWatch,
+  (newValue) => {
+    topThreeWatch.value = newValue;
+  }
+);
+
 
 // Define computed properties with error handling
 const filteredMembers = computed(() => {

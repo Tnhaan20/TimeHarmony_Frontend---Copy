@@ -10,6 +10,7 @@ export const useAdminStore = defineStore("admin", {
     products: [],
     orders: [],
     nullOrders: [],
+    topThreeWatch: [],
     isLoading: false,
     error: null,
   }),
@@ -102,6 +103,31 @@ export const useAdminStore = defineStore("admin", {
         this.isLoading = false;
       }
     },
+    async getTopThreeWatch() {
+      const token = useAuthStore().token;
+      if (!token) return;
+      
+      this.isLoading = true;
+      this.error = null;
+    
+      try {
+        const response = await axios.get(`${api}/admin/get/top-3-brand`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.data);
+    
+        // Assign the fetched data to topThreeWatch
+        this.topThreeWatch = response.data;
+      } catch (error) {
+        console.error("Error fetching top 3:", error);
+        this.error = error.message || "Failed to fetch top 3 brands";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    
     async deleteOrdersNull(id) {
       
       this.isLoading = true;
@@ -195,6 +221,9 @@ export const useAdminStore = defineStore("admin", {
     },
   },
   getters: {
+    getTopThree(state) {
+      return state.topThreeWatch;
+    },
     filteredMembers: (state) => (query) => {
       const lowerQuery = query.toLowerCase();
       return state.members.filter(
