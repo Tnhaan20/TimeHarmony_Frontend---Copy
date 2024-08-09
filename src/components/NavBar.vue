@@ -6,8 +6,7 @@
           @close="showPopup = false"
         />
  <nav
-  v-if="(!auth.user_id && !['/login', '/signup', '/chat', '/upload', '/order', '/cart', '/forgot'].includes(route.path)) || (auth.user_id && !['/chat', '/order', '/orderconfirmation/:order_id', '/admin', '/appraiser'].includes(route.path))"
-
+  v-if="(!auth.user_id && !['/login', '/signup', '/chat', '/upload', '/order', '/cart', '/forgot', '/admin'].includes(route.path)) || (auth.user_id && !['/chat', '/order', '/orderconfirmation/:order_id', '/admin', '/appraiser'].includes(route.path))"
   class="myheader grid grid-cols-6 gap-4 h-20 items-center sticky top-0 z-50 w-full pl-6 pr-6"
 >
     <div class="flex items-center justify-between col-span-1">
@@ -58,7 +57,6 @@
         >Upload</router-link
       > -->
       <router-link to="/upload" v-if="auth.user_id && userStore.role!='ROLE_STAFF' && userStore.role!='ROLE_ADMIN'">
-        
         <button @click="handleUploadClick" class="th-p-btn upload-button px-6">
           Đăng bán<span class="mdi mdi-plus"></span>
         </button>

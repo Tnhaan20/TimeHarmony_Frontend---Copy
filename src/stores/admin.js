@@ -127,6 +127,30 @@ export const useAdminStore = defineStore("admin", {
         this.isLoading = false;
       }
     },
+    async getOrderByDay() {
+      const token = useAuthStore().token;
+      if (!token) return;
+      
+      this.isLoading = true;
+      this.error = null;
+    
+      try {
+        const response = await axios.get(`${api}/admin/get/top-3-brand`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.data);
+    
+        // Assign the fetched data to topThreeWatch
+        this.topThreeWatch = response.data;
+      } catch (error) {
+        console.error("Error fetching top 3:", error);
+        this.error = error.message || "Failed to fetch top 3 brands";
+      } finally {
+        this.isLoading = false;
+      }
+    },
     
     async deleteOrdersNull(id) {
       

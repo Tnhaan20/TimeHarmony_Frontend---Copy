@@ -19,11 +19,17 @@
         <ul class="p-6">
           <li class="mb-4">
             <a href="#" @click.prevent="currentSection = 'profit-overview'" 
-               :class="{'text-primary': currentSection === 'profit-overview'}">
-              Tổng Quan Thông Tin
-            </a>
-          </li>
-          <li class="mb-4">
+            :class="{'text-primary': currentSection === 'profit-overview'}">
+            Tổng Quan Thông Tin
+          </a>
+        </li>
+        <li class="mb-4">
+          <a href="#" @click.prevent="currentSection = 'pending-products'"
+             :class="{'text-primary': currentSection === 'pending-products'}">
+            Danh Sách Chờ Duyệt
+          </a>
+        </li>
+        <li class="mb-4">
             <a href="#" @click.prevent="currentSection = 'member-list'"
                :class="{'text-primary': currentSection === 'member-list'}">
               Danh Sách Người Dùng
@@ -44,13 +50,7 @@
           <li class="mb-4">
             <a href="#" @click.prevent="currentSection = 'products'"
                :class="{'text-primary': currentSection === 'products'}">
-               Danh Sách Đồng Hồ Được Bán
-            </a>
-          </li>
-          <li class="mb-4">
-            <a href="#" @click.prevent="currentSection = 'pending-products'"
-               :class="{'text-primary': currentSection === 'pending-products'}">
-              Danh Sách Chờ Duyệt
+               Danh Sách Đồng Hồ
             </a>
           </li>
           <li class="mb-4">
@@ -82,14 +82,14 @@
     <main class="flex-1 p-6 overflow-y-auto">
       <!-- Tổng quan lợi nhuận -->
       <section v-if="currentSection === 'profit-overview'" class="mb-6">
-        <div class="back w-full p-4 rounded-lg shadow">
-          <h2 class="flex text-2xl font-semibold justify-center">Top 3 Hãng Được Đăng Bán Nhiều Nhất</h2>
-          <ol>
-            <li class="w-full flex justify-center p-1 text-xl" v-for="(item, index) in topThreeWatch" :key="item.brand">
-              {{ index + 1 }}. {{ item.brand }} - {{ item[""] }} chiếc
-            </li>
-          </ol>
-        </div>
+          <div class="back w-full p-4 rounded-lg shadow">
+            <h2 class="flex text-2xl font-semibold justify-center">Top 3 Hãng Được Đăng Bán Nhiều Nhất</h2>
+            <ol>
+              <li class="w-full flex justify-center p-1 text-xl" v-for="(item, index) in topThreeWatch" :key="item.brand">
+                {{ index + 1 }}. {{ item.brand }} - {{ item[""] }} chiếc
+              </li>
+            </ol>
+          </div>
         <div class="w-full justify-between flex p-5">
           <h2 class="text-2xl font-semibold mb-4">Tổng Quan Lợi Nhuận</h2>
      <div class="relative">
@@ -171,25 +171,7 @@
       <!-- Quản trị người dùng -->
       <section v-if="currentSection === 'member-list'" class="mb-6">
         <h2 class="text-3xl text-center font-semibold mb-5">Danh Sách Người Dùng</h2>
-        <h2 class="text-xl font-semibold mb-4">Thêm làm nhân viên</h2>
-        <div class="flex items-center gap-4 mb-6">
-          <div class="flex-1">
-            <input
-              type="text"
-              placeholder="Nhập ID người dùng"
-              class="ui-input w-full px-4 py-2 border rounded-lg"
-              v-model="userId"
-              required
-            />
-          </div>
-          <button 
-            @click="promoteToStaff" 
-            :disabled="!userId" 
-            :class="['th-p-btn py-2 px-4 rounded-lg', { 'opacity-50 cursor-not-allowed': !userId }]"
-          >
-            Thêm làm nhân viên
-          </button>
-        </div>
+      
         <div class="mb-6">
           <h2 class="text-xl font-semibold mb-4">Tìm kiếm người dùng</h2>
           <div class="ui-input-container mb-4">
@@ -202,6 +184,26 @@
               @keyup="searchMembers"
             />
           </div>
+          <!-- Cột 1: Trạng thái -->
+            <div class="flex flex-col">
+              <h3 class="font-semibold mb-2">Trạng thái</h3>
+              <div class="flex flex-col gap-2">
+                <label class="container flex items-center gap-2">
+                  <input type="checkbox" :checked="selectedStatus === 'active'" @change="toggleStatus('active')" />
+                  <svg viewBox="0 0 64 64" height="1em">
+                    <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+                  </svg>
+                  <span>Hoạt động</span>
+                </label>
+                <label class="container flex items-center gap-2">
+                  <input type="checkbox" :checked="selectedStatus === 'banned'" @change="toggleStatus('banned')" />
+                  <svg viewBox="0 0 64 64" height="1em">
+                    <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+                  </svg>
+                  <span>Bị cấm</span>
+                </label>
+              </div>
+            </div>
           <!-- User -->
           <h3 class="text-3xl py-10 text-center">Danh sách thành viên</h3>
           <div class="overflow-x-auto back p-4 rounded-lg shadow">
@@ -213,9 +215,9 @@
                   <th class="p-2">Tên</th>
                   <th class="p-2">Email</th>
                   <th class="p-2">Username</th>
-                  <th class="p-2">Vai trò</th>
                   <th class="p-2">Trạng Thái</th>
                   <th class="p-2">Cấm người dùng</th>
+                  <th class="p-2">Thêm làm nhân viên</th>
                 </tr>
               </thead>
               <tbody>
@@ -234,16 +236,6 @@
                   <td class="p-2">{{ member.email }}</td>
                   <td class="p-2">{{ member.user_log_info.username }}</td>
                   <td class="p-2 text-center">
-                    <div v-if="member.user_log_info.authorities.authority == 'ROLE_STAFF' && member.staff_role == null" class="cursor-pointer hover-underline-animation"
-                      @click="openPromoteModal(member)"
-                    >
-                      {{ member.staff_role ? roleLabels[member.staff_role] : roleLabels[member.user_log_info.authorities.authority] }}
-                    </div>
-                    <div v-else>
-                      {{ member.staff_role ? roleLabels[member.staff_role] : roleLabels[member.user_log_info.authorities.authority] }}
-                    </div>
-                  </td>
-                  <td class="p-2 text-center">
                     {{ member.user_log_info.enabled === 1 ? "Hoạt động" : "Bị cấm" }}
                   </td>
                   <td class="p-2 text-center">
@@ -261,6 +253,15 @@
                     >
                       Bỏ cấm người dùng
                     </div>
+                  </td>
+                  <td class="p-2 text-center">
+                  <span
+                    v-if="member.user_log_info.enabled === 1"
+                    @click="promoteToStaff(member.member_id)" 
+                    class="hover-underline-animation cursor-pointer"
+                  >
+                    Thêm làm nhân viên
+                  </span>
                   </td>
                 </tr>
               </tbody>
@@ -284,6 +285,26 @@
               @keyup="searchMembers"
             />
           </div>
+          <!-- Cột 1: Trạng thái -->
+        <div class="flex flex-col">
+          <h3 class="font-semibold mb-2">Trạng thái</h3>
+          <div class="flex flex-col gap-2">
+            <label class="container flex items-center gap-2">
+              <input type="checkbox" :checked="selectedStatus === 'active'" @change="toggleStatus('active')" />
+              <svg viewBox="0 0 64 64" height="1em">
+                <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+              </svg>
+              <span>Hoạt động</span>
+            </label>
+            <label class="container flex items-center gap-2">
+              <input type="checkbox" :checked="selectedStatus === 'banned'" @change="toggleStatus('banned')" />
+              <svg viewBox="0 0 64 64" height="1em">
+                <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+              </svg>
+              <span>Bị cấm</span>
+            </label>
+          </div>
+        </div>
         <h3 class="text-3xl py-10 text-center">Danh sách người đăng bán</h3>
           <div class="overflow-x-auto back p-4 rounded-lg shadow">
             <table class="table w-full">
@@ -294,7 +315,6 @@
                   <th class="p-2">Tên</th>
                   <th class="p-2">Email</th>
                   <th class="p-2">Username</th>
-                  <th class="p-2">Vai trò</th>
                   <th class="p-2">Trạng Thái</th>
                   <th class="p-2">Cấm người dùng</th>
                 </tr>
@@ -310,20 +330,12 @@
                     />
                   </td>
                   <td class="p-2">
-                    {{ member?.first_name }} {{ member?.last_name }}
+                    <router-link class="hover-underline-animation" :to="`/retailer/${member.member_id}`">
+                      {{ member?.first_name }} {{ member?.last_name }}
+                    </router-link>
                   </td>
                   <td class="p-2">{{ member.email }}</td>
                   <td class="p-2">{{ member.user_log_info.username }}</td>
-                  <td class="p-2 text-center">
-                    <div v-if="member.user_log_info.authorities.authority == 'ROLE_STAFF' && member.staff_role == null" class="cursor-pointer hover-underline-animation"
-                      @click="openPromoteModal(member)"
-                    >
-                      {{ member.staff_role ? roleLabels[member.staff_role] : roleLabels[member.user_log_info.authorities.authority] }}
-                    </div>
-                    <div v-else>
-                      {{ member.staff_role ? roleLabels[member.staff_role] : roleLabels[member.user_log_info.authorities.authority] }}
-                    </div>
-                  </td>
                   <td class="p-2 text-center">
                     {{ member.user_log_info.enabled === 1 ? "Hoạt động" : "Bị cấm" }}
                   </td>
@@ -343,6 +355,7 @@
                       Bỏ cấm người dùng
                     </div>
                   </td>
+                  
                 </tr>
               </tbody>
             </table>
@@ -363,29 +376,56 @@
               @keyup="searchMembers"
             />
           </div>
-          <div class="w-full flex justify-start">
-            <label class="container flex justify-start items-center text-center gap-2">
-              <input type="checkbox" :checked="selectedRole === 'staff'" @change="toggleRole('staff')" />
-              <svg viewBox="0 0 64 64" height="1em">
-                <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
-              </svg>
-              <label>Nhân viên</label>
-            </label>
-            <label class="container flex justify-start items-center text-center gap-2">
-              <input type="checkbox" :checked="selectedRole === 'appraiser'" @change="toggleRole('appraiser')" />
-              <svg viewBox="0 0 64 64" height="1em">
-                <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
-              </svg>
-              <label>Chuyên viên kiểm định</label>
-            </label>
-            <label class="container flex justify-start items-center text-center gap-2">
-              <input type="checkbox" :checked="selectedRole === 'shipper'" @change="toggleRole('shipper')" />
-              <svg viewBox="0 0 64 64" height="1em">
-                <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
-              </svg>
-              <label>Nhân viên vận chuyển</label>
-            </label>
-          </div>
+          <div class="flex flex-row gap-8">
+  <!-- Cột 1: Trạng thái -->
+  <div class="flex flex-col">
+    <h3 class="font-semibold mb-2">Trạng thái</h3>
+    <div class="flex flex-col gap-2">
+      <label class="container flex items-center gap-2">
+        <input type="checkbox" :checked="selectedStatus === 'active'" @change="toggleStatus('active')" />
+        <svg viewBox="0 0 64 64" height="1em">
+          <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+        </svg>
+        <span>Hoạt động</span>
+      </label>
+      <label class="container flex items-center gap-2">
+        <input type="checkbox" :checked="selectedStatus === 'banned'" @change="toggleStatus('banned')" />
+        <svg viewBox="0 0 64 64" height="1em">
+          <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+        </svg>
+        <span>Bị cấm</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Cột 2: Vai trò -->
+  <div class="flex flex-col">
+    <h3 class="font-semibold mb-2">Vai trò</h3>
+    <div class="flex flex-col gap-2">
+      <label class="container flex items-center gap-2">
+        <input type="checkbox" :checked="selectedRole === 'staff'" @change="toggleRole('staff')" />
+        <svg viewBox="0 0 64 64" height="1em">
+          <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+        </svg>
+        <span>Nhân viên</span>
+      </label>
+      <label class="container flex items-center gap-2">
+        <input type="checkbox" :checked="selectedRole === 'appraiser'" @change="toggleRole('appraiser')" />
+        <svg viewBox="0 0 64 64" height="1em">
+          <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+        </svg>
+        <span>Chuyên viên kiểm định</span>
+      </label>
+      <label class="container flex items-center gap-2">
+        <input type="checkbox" :checked="selectedRole === 'shipper'" @change="toggleRole('shipper')" />
+        <svg viewBox="0 0 64 64" height="1em">
+          <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+        </svg>
+        <span>Nhân viên vận chuyển</span>
+      </label>
+    </div>
+  </div>
+</div>
         <h3 class="text-3xl text-center py-10">Danh sách nhân viên</h3>
           <div class="overflow-x-auto back p-4 rounded-lg shadow">
             <table class="table w-full">
@@ -453,7 +493,7 @@
 
       <!-- Quản trị Danh Sách sản phẩm -->
       <section v-if="currentSection === 'products'" class="mb-6">
-        <h2 class="text-2xl font-semibold mb-4">Danh Sách Đồng Hồ Được Bán</h2>
+        <h2 class="text-2xl font-semibold mb-4">Danh Sách Đồng Hồ</h2>
         <div class="ui-input-container mb-4">
           <input
             required
@@ -464,6 +504,18 @@
             @keyup.enter="searchWatches"
           />
         </div>
+        <div class="flex flex-col mb-4">
+  <h3 class="font-semibold mb-2">Trạng thái</h3>
+  <div class="flex w-full justify-between p-1">
+    <label v-for="(label, state) in stateLabels" :key="state" class="container flex  items-center gap-1">
+      <input type="checkbox" v-model="selectedStates" :value="Number(state)" />
+      <svg viewBox="0 0 64 64" height="1em">
+        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" class="path"></path>
+      </svg>
+      <span>{{ label }}</span>
+    </label>
+  </div>
+</div>
         <div class="overflow-x-auto back p-4 rounded-lg shadow">
           <table class="table w-full">
             <thead class="bg-gray-200">
@@ -473,7 +525,6 @@
                 <th class="p-2">Người bán</th>
                 <th class="p-2">Giá</th>
                 <th class="p-2">Trạng thái</th>
-                
               </tr>
             </thead>
             <tbody>
@@ -686,7 +737,6 @@
                   <th class="p-2">Tên</th>
                   <th class="p-2">Email</th>
                   <th class="p-2">Username</th>
-                  <th class="p-2">Vai trò</th>
                   <th class="p-2">Trạng Thái</th>
                   <th class="p-2">Hoạt động</th>
                 </tr>
@@ -706,7 +756,6 @@
                   </td>
                   <td class="p-2">{{ member.email }}</td>
                   <td class="p-2">{{ member.user_log_info.username }}</td>
-                  <td class="p-2 text-center"> {{ roleLabels[member.staff_role] }} </td>
                   <td class="p-2 text-center">
                     {{ member.user_log_info.enabled === 1 ? "Hoạt động" : "Bị cấm" }}
                   </td>
@@ -957,6 +1006,15 @@ const validateDate = (selectedDate) => {
 };
 
 const selectedRole = ref(null);
+const selectedStatus = ref(null);
+
+const toggleStatus = (status) => {
+  if (selectedStatus.value === status) {
+    selectedStatus.value = null;
+  } else {
+    selectedStatus.value = status;
+  }
+};
 
 const toggleRole = (role) => {
   if (selectedRole.value === role) {
@@ -1295,25 +1353,48 @@ watch(
 
 // Define computed properties with error handling
 const filteredMembers = computed(() => {
-  try {
-    return adminStore.filteredMembers(qMembers.value).filter(member => member.user_log_info.authorities.authority === 'ROLE_USER');
-  } catch (err) {
-    console.error("Error in filteredMembers:", err);
-    error.value = "Error filtering members. Please try again.";
-    return [];
+  
+  let filter = adminStore.filteredMembers(qMembers.value).filter(member => {
+    return member.user_log_info.authorities.authority === 'ROLE_USER';
+  });  
+  if (selectedStatus.value) {
+    filter = filter.filter(member => {
+      switch (selectedStatus.value) {
+        case 'active':
+          return member.user_log_info.enabled === 1;
+        case 'banned':
+          return member.user_log_info.enabled === 0;
+        default:
+          return true;
+      }
+    });
   }
+  
+  console.log("Final filtered data:", filter);
+  return filter;
 });
 
 const filteredSeller = computed(() => {
-  try {
-    return adminStore.filteredMembers(qMembers.value).filter(member => member.user_log_info.authorities.authority === 'ROLE_SELLER');
-  } catch (err) {
-    console.error("Error in filteredMembers:", err);
-    error.value = "Error filtering members. Please try again.";
-    return [];
+  
+  let filter = adminStore.filteredMembers(qMembers.value).filter(member => {
+    return member.user_log_info.authorities.authority === 'ROLE_SELLER';
+  });  
+  if (selectedStatus.value) {
+    filter = filter.filter(member => {
+      switch (selectedStatus.value) {
+        case 'active':
+          return member.user_log_info.enabled === 1;
+        case 'banned':
+          return member.user_log_info.enabled === 0;
+        default:
+          return true;
+      }
+    });
   }
+  
+  console.log("Final filtered data:", filter);
+  return filter;
 });
-
 const filteredStaff = computed(() => {
   try {
     let filter = adminStore.filteredMembers(qStaff.value).filter(member => 
@@ -1353,15 +1434,18 @@ const filteredShipper = computed(() => {
   }
 });
 
+const selectedStates = ref([]);
+
 const filteredWatches = computed(() => {
-  try {
-    return adminStore.filteredWatches(qWatches.value).filter(product => product.state !== 0);
-  } catch (err) {
-    console.error("Error in filteredWatches:", err);
-    error.value = "Error filtering watches. Please try again.";
-    return [];
+  let filtered = adminStore.filteredWatches(qWatches.value);
+  
+  if (selectedStates.value.length > 0) {
+    filtered = filtered.filter(product => selectedStates.value.includes(product.state));
   }
+  
+  return filtered;
 });
+
 
 const filteredPendingWatches = computed(() => {
   try {
@@ -1531,17 +1615,16 @@ const searchOrders = () => {
 };
 
 // Define a method to promote a user to staff
-const promoteToStaff = async () => {
-  if (!userId.value) return; // Không cần thiết vì nút đã bị disabled, nhưng thêm để chắc chắn
+const promoteToStaff = async (uID) => {
 
   try {
-    const memberExists = await checkMemberExists(userId.value);
+    const memberExists = await checkMemberExists(uID);
     if (!memberExists) {
       alert("ID người dùng không đúng hoặc không tồn tại");
       return;
     }
 
-    await adminStore.promoteToStaff(userId.value);
+    await adminStore.promoteToStaff(uID);
     await adminStore.getMembers();
     alert("Thêm làm nhân viên thành công");
   } catch (error) {
