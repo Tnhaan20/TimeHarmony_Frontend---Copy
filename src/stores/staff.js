@@ -118,5 +118,36 @@ export const useStaffStore = defineStore("staff", {
         return [];
       }
     },
+    updateWatch(id,data){
+      axios.patch(`${api}/update/fields/${id}`,{
+        price: data.price,
+        brand: data.brand,
+        series: data.series,
+        model: data.model,
+        gender: data.gender,
+        style: data.style,
+        subclass: data.subclass,
+        madelabel: data.madelabel,
+        calender: data.calender,
+        feature: data.feature,
+        movement: data.movement,
+        function: data.function,
+        engine: data.engine,
+        waterresistant: data.waterresistant,
+        bandcolor: data.bandcolor,
+        bandtype: data.bandtype,
+        clasp: data.clasp,
+        bracelet: data.bracelet,
+        dialtype: data.dialtype,
+        dialcolor: data.dialcolor,
+        crystal: data.crystal,
+        secondmaker: data.secondmaker,
+        bezel: data.bezel,
+        bezelmaterial: data.bezelmaterial,
+        caseback: data.caseback,
+        casedimension: data.casedimension,
+        caseshape: data.caseshape,
+      })
+    }
   },
 });
