@@ -86,7 +86,7 @@
           >
         </div>
       </div>
-      <div class="form-content">
+      <!-- <div class="form-content">
         <div class="form__group field w-96">
           <input
             v-model="watchData.price"
@@ -94,10 +94,10 @@
             class="form__field"
             placeholder="Price"
           />
-          <label for="price" class="form__label">Giá</label>
+          <label for="price" class="form__label">Giá mong</label>
         </div>
-      </div>
-      <h3 class="text-3xl">Tính năng</h3>
+      </div> -->
+      <!-- <h3 class="text-3xl">Tính năng</h3>
       <div class="form-content">
         <div class="form__group field w-96">
           <input
@@ -415,16 +415,16 @@
           />
           <label for="price" class="form__label">Nhãn thực hiện</label>
         </div>
-      </div>
-      <h3 class="text-3xl">Chọn ngày kiểm định</h3>
+      </div> -->
+      <!-- <h3 class="text-3xl">Chọn ngày kiểm định</h3>
 
-      <div class="flex w-full px-20 justify-start">
+      <div class="flex w-3/4 px-20 justify-start">
         <VueDatePicker
           v-model="date"
           placeholder="Chọn ngày muốn kiểm định"
           :format="formatDate"
         ></VueDatePicker>
-      </div>
+      </div> -->
       <p v-if="dateWarning" class="text-red-500">{{ dateWarning }}</p>
       <br />
       <div class="flex justify-end button-div">
