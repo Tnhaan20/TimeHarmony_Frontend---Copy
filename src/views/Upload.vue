@@ -416,7 +416,7 @@
           <label for="price" class="form__label">Nhãn thực hiện</label>
         </div>
       </div> -->
-      <h3 class="text-3xl">Chọn ngày kiểm định</h3>
+      <!-- <h3 class="text-3xl">Chọn ngày kiểm định</h3>
 
       <div class="flex w-3/4 px-20 justify-start">
         <VueDatePicker
@@ -424,7 +424,7 @@
           placeholder="Chọn ngày muốn kiểm định"
           :format="formatDate"
         ></VueDatePicker>
-      </div>
+      </div> -->
       <p v-if="dateWarning" class="text-red-500">{{ dateWarning }}</p>
       <br />
       <div class="flex justify-end button-div">
