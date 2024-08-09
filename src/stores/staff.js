@@ -119,7 +119,7 @@ export const useStaffStore = defineStore("staff", {
       }
     },
     updateWatch(id,data){
-      axios.patch(`${api}/update/fields/${id}`,{
+      axios.patch(`${api}/staff/update/fields/${id}`,{
         price: data.price,
         brand: data.brand,
         series: data.series,
@@ -147,6 +147,9 @@ export const useStaffStore = defineStore("staff", {
         caseback: data.caseback,
         casedimension: data.casedimension,
         caseshape: data.caseshape,
+      })
+      .then((res)=>{
+        console.log(res); 
       })
     }
   },

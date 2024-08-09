@@ -438,7 +438,7 @@
             Huỷ
           </button>
           <button
-            @click="handleConfirm('approve'); submit();"
+            @click="handleConfirm('approve')"
             class="btn"
           >
             Xác nhận
@@ -722,6 +722,8 @@ const onDragEnd = (event) => {
 const handleConfirm = async (type) => {
   if (type === "approve") {
     await staffStore.approveWatch(draggedItemId.value);
+    console.log(`ready to update ${draggedItemId.value}`);
+    submit()
     showApproveModal.value = false;
   } else if (type === "unapprove") {
     if (!reportContent.value.trim()) {
@@ -836,7 +838,7 @@ const submit = () => {
     casedimension: watchData.casedimension,
     caseshape: watchData.case_shape,
   };
-  useStaffStore(draggedItemId, data);
+  useStaffStore().updateWatch(draggedItemId.value, data);
 };
 </script>
 
