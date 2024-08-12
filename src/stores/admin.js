@@ -270,8 +270,7 @@ export const useAdminStore = defineStore("admin", {
         const { data, error } = await supabase
           .from('ban')
           .select("*")
-          .eq('username', username)
-          .single(); // Use single() if you expect only one ban record per user
+          .eq('username', username);
     
         if (error) {
           console.error('Error checking ban status:', error);
@@ -280,16 +279,21 @@ export const useAdminStore = defineStore("admin", {
     
         console.log('Ban check result:', data);
     
-        if (data) {
-          console.log('User is banned:', data);
-          return data; // Return the ban record
+        if (data && data.length > 0) {
+          console.log('User is banned:', data[0]);
+          return data[0]; // Return the first ban record
         } else {
           console.log('User is not banned');
           return null;
         }
       } catch (error) {
         console.error('Error checking ban status:', error);
-        throw error; // Re-throw the error to be handled by the caller
+        // If the error is due to no rows found, treat it as not banned
+        if (error.code === 'PGRST116') {
+          console.log('No ban record found, user is not banned');
+          return null;
+        }
+        throw error; // Re-throw other errors to be handled by the caller
       }
     },
 

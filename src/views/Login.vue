@@ -71,6 +71,7 @@ import LoginViaFacebook from "../components/LoginViaFacebook.vue";
 import PopUp from "../components/PopUp.vue";
 import { useChatStore } from "../stores/chat";
 import { useUserStore } from "../stores/user";
+import { useAdminStore } from "../stores/admin";
 
 const errorMessage = ref('');
 const showErrorPopup = ref(false);
@@ -110,13 +111,11 @@ async function onSubmit() {
   if (user.username && user.password) {
     isLoading.value = true;
     try {
-      const ban = await useChatStore().findBanChat(user.username, import.meta.env.VITE_ADMIN_USERID);
-      if (ban && ban.length > 0) {
-        message.value = ban[0].text;
-        console.log('Ban message set:', message.value);
+      const ban = await useAdminStore().checkBan(user.username);
+      if (ban) {
+        message.value = `Tài khoản bạn đang đăng nhập đã bị cấm khỏi nền tảng vì: ${ban.reason}.`
         return;
       }
-
       console.log('Attempting login with:', { username: user.username, password: user.password });
       
       // Wrap the login call in a Promise to handle its asynchronous nature
