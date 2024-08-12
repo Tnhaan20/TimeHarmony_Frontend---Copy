@@ -1663,16 +1663,16 @@ const confirmBanUser = async () => {
   if (selectedMember.value) {
     try {
       await useChatStore().registerUser2(selectedMember.value.member_id);
-      await useChatStore().sendMessage(
-        selectedMember.value.member_id,
-        `Tài khoản mang tên ${selectedMember.value.user_log_info.username} đã bị cấm khỏi nền tảng! Lý do: ${banMessage.value}.`
-      );
+      var user = {
+        username: selectedMember.value.user_log_info.username,
+        user_id: selectedMember.value.member_id
+      }
+      await useAdminStore().ban(user, banMessage.value)
       await useMailStore().send(
         selectedMember.value.email,
         "THÔNG BÁO BẠN ĐÃ BỊ BAN KHỎI TIME HARMONY.",
         `Tài khoản mang tên ${selectedMember.value.user_log_info.username} đã bị cấm khỏi nền tảng! Lý do: ${banMessage.value}.`
       );
-      await useAdminStore().ban(selectedMember.value.user_log_info.username);
       
       // Refresh the members list to update the UI
       await adminStore.getMembers();
@@ -1694,7 +1694,6 @@ const confirmBanUser = async () => {
 const unbanUser = async (member) => {
   try {
     isLoading.value = true;
-    await useChatStore().removeChat(useAuthStore().user_id, member.member_id);
     await useAdminStore().unBan(member.user_log_info.username);
     
     // Refresh the members list to update the UI
