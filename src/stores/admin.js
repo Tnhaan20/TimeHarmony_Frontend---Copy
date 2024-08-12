@@ -1,8 +1,12 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { useAuthStore } from "./auth";
+import { createClient } from "@supabase/supabase-js";
 
 const api = import.meta.env.VITE_API_PORT;
+const supabaseUrl = import.meta.env.VITE_SUPABASEURL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASEANONKEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const useAdminStore = defineStore("admin", {
   state: () => ({
@@ -198,35 +202,134 @@ export const useAdminStore = defineStore("admin", {
       }
     },
 
-    ban(id) {
+    async ban(user, reason) {
       const token = useAuthStore().token;
-      console.log(id);
-      axios.post(`${api}/admin/ban/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((response) => {
+      
+      try {
+        // Call the API to ban the user
+        const response = await axios.post(`${api}/admin/ban/${user.username}`, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+    
         console.log(response.data);
-      })
-      .catch((error) => {
+    
+        // Insert ban record into Supabase
+        const { data, error } = await supabase
+          .from('ban')
+          .insert([{ 
+            id: crypto.randomUUID(), 
+            user_id: user.user_id, 
+            username: user.username, 
+            reason: reason 
+          }])
+          .select();
+    
+        if (error) throw error;
+    
+        return data;
+      } catch (error) {
         console.error('Error banning user:', error);
-      });
+        throw error;
+      }
     },
 
-    unBan(id) {
+    async unBan(username) {
       const token = useAuthStore().token;
-      axios.post(`${api}/admin/unban/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      try {
+        // Call the API to unban the user
+        const apiResponse = await axios.post(`${api}/admin/unban/${username}`, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log(apiResponse.data);
+    
+        // Delete from the 'ban' table instead of 'messages'
+        const { data, error } = await supabase
+          .from('ban')
+          .delete()
+          .eq('username', username);
+    
+        if (error) throw error;
+    
+        console.log('Ban record deleted successfully');
+        return data;
+      } catch (error) {
+        console.error('Error unbanning user:', error);
+        throw error;
+      }
+    },
+
+    async checkBan(username) {
+      try {
+        console.log('Checking ban status for:', username);
+        const { data, error } = await supabase
+          .from('ban')
+          .select("*")
+          .eq('username', username)
+          .single(); // Use single() if you expect only one ban record per user
+    
+        if (error) {
+          console.error('Error checking ban status:', error);
+          throw error;
         }
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error('Error banning user:', error);
-      });
+    
+        console.log('Ban check result:', data);
+    
+        if (data) {
+          console.log('User is banned:', data);
+          return data; // Return the ban record
+        } else {
+          console.log('User is not banned');
+          return null;
+        }
+      } catch (error) {
+        console.error('Error checking ban status:', error);
+        throw error; // Re-throw the error to be handled by the caller
+      }
+    },
+
+    async subscribeToBan() {
+      const authStore = useAuthStore();
+      const username = authStore.username; // Assuming you store the username in the auth store
+    
+      if (this.banSubscription) {
+        this.unsubscribeFromBan();
+      }
+    
+      this.banSubscription = supabase
+        .channel('ban')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // This will catch INSERT, UPDATE, and DELETE events
+            schema: 'public',
+            table: 'ban',
+            filter: `username=eq.${username}`,
+          },
+          payload => {
+            if (payload.eventType === 'INSERT') {
+              console.log('User has been banned');
+              // useAuthStore().logout()
+              // You might want to perform some actions here, like logging out the user
+            } else if (payload.eventType === 'DELETE') {
+              console.log('User has been unbanned');
+              // useAuthStore().logout()
+              // You might want to perform some actions here, like allowing the user to log in again
+            }
+            // You can add more specific handling for UPDATE events if needed
+          }
+        )
+        .subscribe();
+    },
+    
+    unsubscribeFromBan() {
+      if (this.banSubscription) {
+        supabase.removeChannel(this.banSubscription);
+        this.banSubscription = null;
+      }
     },
 
     updateStaffRole(id, role){
