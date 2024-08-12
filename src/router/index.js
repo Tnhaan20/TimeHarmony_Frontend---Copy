@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import { useUserStore } from "../stores/user";
 import { useChatStore } from "../stores/chat";
+import { useAdminStore } from "../stores/admin";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -234,6 +235,7 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const userStore = useUserStore();
   const chatStore = useChatStore();
+  const adminStore = useAdminStore();
   const user_id = authStore.user_id;
 
   if (user_id != null) {
@@ -248,6 +250,10 @@ router.beforeEach(async (to, from, next) => {
     if (!chatStore.subscription) {
       chatStore.subscribeToMessages();
     }
+
+    if(!adminStore.banSubscription){
+      adminStore.subscribeToBan()
+    }
     
     // Redirect authenticated users away from login, signup, and forgot pages
     if (['/login', '/signup', '/forgot'].includes(to.path)) {
@@ -257,6 +263,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
     // Unsubscribe from messages if not authenticated
     chatStore.unsubscribeFromMessages();
+    adminStore.unsubscribeFromBan()
   }
   next();
 });

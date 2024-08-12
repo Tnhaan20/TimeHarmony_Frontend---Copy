@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { useAuthStore } from "./auth";
 import { createClient } from "@supabase/supabase-js";
+import { useUserStore } from "./user";
 
 const api = import.meta.env.VITE_API_PORT;
 const supabaseUrl = import.meta.env.VITE_SUPABASEURL;
@@ -17,6 +18,7 @@ export const useAdminStore = defineStore("admin", {
     topThreeWatch: [],
     isLoading: false,
     error: null,
+    banSubscription: null
   }),
 
   actions: {
@@ -292,37 +294,55 @@ export const useAdminStore = defineStore("admin", {
     },
 
     async subscribeToBan() {
+      const userStore = useUserStore();
       const authStore = useAuthStore();
-      const username = authStore.username; // Assuming you store the username in the auth store
+      const username = userStore.username;
+      const userId = authStore.user_id;
     
       if (this.banSubscription) {
-        this.unsubscribeFromBan();
+        await this.unsubscribeFromBan();
       }
     
-      this.banSubscription = supabase
-        .channel('ban')
-        .on(
-          'postgres_changes',
-          {
-            event: '*', // This will catch INSERT, UPDATE, and DELETE events
-            schema: 'public',
-            table: 'ban',
-            filter: `username=eq.${username}`,
-          },
-          payload => {
-            if (payload.eventType === 'INSERT') {
-              console.log('User has been banned');
-              // useAuthStore().logout()
-              // You might want to perform some actions here, like logging out the user
-            } else if (payload.eventType === 'DELETE') {
-              console.log('User has been unbanned');
-              // useAuthStore().logout()
-              // You might want to perform some actions here, like allowing the user to log in again
+      try {
+        this.banSubscription = supabase
+          .channel('ban')
+          .on(
+            'postgres_changes',
+            {
+              event: '*', // This will catch INSERT, UPDATE, and DELETE events
+              schema: 'public',
+              table: 'ban',
+              filter: `username=eq.${username}`,
+            },
+            async (payload) => {
+              if (payload.eventType === 'INSERT') {
+                console.log('User has been banned', payload);
+                if (payload.new.username === username || payload.new.user_id === userId) {
+                  console.log('Current user has been banned. Logging out...');
+                  try {
+                    await authStore.logout();
+                    // Optionally, you can redirect to a "banned" page or show a notification
+                    // For example: router.push('/banned');
+                  } catch (error) {
+                    console.error('Error during logout after ban:', error);
+                  }
+                }
+              } else if (payload.eventType === 'DELETE') {
+                console.log('User has been unbanned');
+                // You might want to perform some actions here, like allowing the user to log in again
+                // For example: notify the user that they've been unbanned
+              } else if (payload.eventType === 'UPDATE') {
+                console.log('Ban record updated', payload);
+                // Handle updates to the ban record if needed
+              }
             }
-            // You can add more specific handling for UPDATE events if needed
-          }
-        )
-        .subscribe();
+          )
+          .subscribe();
+    
+        console.log('Successfully subscribed to ban channel');
+      } catch (error) {
+        console.error('Error subscribing to ban channel:', error);
+      }
     },
     
     unsubscribeFromBan() {
