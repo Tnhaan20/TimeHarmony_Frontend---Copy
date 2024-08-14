@@ -370,6 +370,46 @@ export const useAdminStore = defineStore("admin", {
         console.error('Error updating staff role:', error);
       })
     },
+
+    getRequestWatches() {
+      const token = useAuthStore().token;
+      return axios.get(`${api}/admin/get/requests`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        console.log("Request Watches Response:", res.data);
+        return res.data; // Return the data here
+      })
+      .catch((err) => {
+        console.error("Error fetching Request Watches:", err.response ? err.response.data : err.message);
+        // Handle the error here (e.g., show an error message to the user)
+      });
+    }  ,
+    
+    assignWatchRequest(req_id, apr_id, date){
+      const token = useAuthStore().token;
+      axios.patch(`${api}/admin/assign/request?request_id=${req_id}&appraiser_id=${apr_id}`,
+        {
+          appointment_date: date
+        }
+        ,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(
+        (res)=>{
+          console.log(res);
+        }
+      )
+      .catch(
+        (err)=>{
+          console.log(err);    
+        }
+      )
+    }
   },
   getters: {
     getTopThree(state) {
