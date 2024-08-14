@@ -477,6 +477,7 @@ import PopUp from "../components/PopUp.vue";
 import router from "../router";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { useAuthStore } from "../stores/auth";
 
 const date = ref(new Date());
 const dateWarning = ref("");
@@ -612,7 +613,9 @@ async function uploadHandle() {
       useUserStore().user_id,
       useUserStore().username
     );
-    console.log("Upload successful", response);
+    useWatchStore().createRequestWatch(useAuthStore().user_id, response.data, watchData.description)
+    console.log("Upload successful", response.data);
+
     await new Promise((resolve) => setTimeout(resolve, 2000));
     localStorage.setItem("showUploadSuccessPopup", "true");
     window.location.reload();
