@@ -588,7 +588,7 @@
               </td>
               <td class="p-2 border-b">{{ product.watch_name }}</td>
               <td class="p-2 border-b">
-                {{ req[product.watch_id].request_id }}
+                {{ req[product.watch_id]?.request_id ?? null }}
               </td>
               <td class="p-2 border-b">
                 <div class="flex items-center">
@@ -600,9 +600,9 @@
                   <span>{{ product.seller.user_log_info.username }}</span>
                 </div>
               </td>
-              <td class="p-2 border-b">{{ req[product.watch_id].appraiser_assigned }}</td>
-              <td class="p-2 border-b">{{  req[product.watch_id].appointment_date  }}</td>
-              <td class="p-2 border-b">{{  req[product.watch_id].status  }}</td>
+              <td class="p-2 border-b">{{ req[product.watch_id]?.appraiser_assigned ?? null }}</td>
+              <td class="p-2 border-b">{{  req[product.watch_id]?.appointment_date  ?? null }}</td>
+              <td class="p-2 border-b">{{  req[product.watch_id]?.status ?? null  }}</td>
               <td class="p-2 border-b">
                 <button @click="openAssignModal(product)" class="hover-underline-animation">
                   Giao cho Kiểm định viên
