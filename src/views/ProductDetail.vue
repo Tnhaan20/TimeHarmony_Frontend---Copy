@@ -165,6 +165,35 @@
         </div>
       </div>
     </div>
+    <div class="mt-8 border-t border-secondary pt-4">
+      <div class="mb-5">
+        <span class="font-semibold text-xl">Được kiểm định bởi</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center w-full">
+          <table class="w-full border-collapse table">
+            <thead class="table-header">
+              <tr class="bg-[#494949] text-primary">
+                <th class="pb-2">Kiểm định viên</th>
+                <th class="pb-2">Email</th>
+                <th class="pb-2 pl-2">SĐT</th>
+                <th class="pb-2 pl-2">Giá</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t">
+                <td class="py-4">Nhan</td>
+                <td class="py-4">Nhan@mgail</td>
+                <td class="py-4 pl-2">0365669999</td>
+                <td class="py-4 pl-2">{{ formatPriceVND(100000000) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          
+        </div> 
+        
+      </div>
+    </div>
 
     <div class="p-8 border-t border-secondary mt-6 max-w-4xl mx-auto">
       <section class="mb-8">
@@ -622,6 +651,52 @@ function prevImage() {
 
 
 <style scoped>
+
+.table-container {
+  overflow-x: auto;
+  max-height: 400px; /* Adjust this value as needed */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.table th, .table td {
+  padding: 8px;
+  border: 1px solid var(--secondary);
+}
+
+.table-header th {
+  position: sticky;
+  top: 0;
+  background-color: #494949; /* Matches your background color */
+  z-index: 1; /* Keeps the header above the table rows */
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #333;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #ffbd59;
+}
+
+
 .thumbnail {
   transition: border-color 0.2s;
 }
