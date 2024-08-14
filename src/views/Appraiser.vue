@@ -55,33 +55,40 @@
           <i :class="['material-icons', column.iconColor]">{{ column.icon }}</i>
           {{ column.name }}
         </h2>
-        <draggable
+                <draggable
           v-model="column.tasks"
           :group="'tasks'"
-          item-key="id"
+          item-key="request_id"
           @end="onDragEnd"
           :class="[
             'flex-grow min-h-[200px] p-2 bg-[#343432]',
             { 'list-none': viewMode === 'kanban' },
           ]"
         >
-          <template #item="{ element }">
+
+            <template #item="{ element }">
             <div class="bg-[#1b1b1b] p-4 shadow-md cursor-move mb-2 box">
               <h3 class="text-primary font-bold text-md">
-                {{ element.title }}
+                Mã yêu cầu: {{ element.request_id }}
               </h3>
+              <p class="text-sm text-[whitesmoke]">ID Đồng hồ: {{ element.watch_id }}</p>
+              
               <p class="text-sm text-[whitesmoke]">
-                {{ formatPriceVND(element.price) }}
+                Ghi chú: {{ element.note }}
               </p>
-              <p class="text-sm text-[whitesmoke]">{{ element.id }}</p>
               <p class="text-xs text-[whitesmoke] mt-2 mb-2">
-                Thời gian: {{ element.dueDate }}
+                Thời gian hẹn: {{ element.dueDate }}
+              </p>
+              <p class="text-xs text-[whitesmoke] mt-2 mb-2">
+                Ngày tạo: {{ element.createdAt }}
+              </p>
+              <p class="text-xs text-[whitesmoke] mt-2 mb-2">
+                Trạng thái: {{ element.status }}
               </p>
               <router-link
-                :to="`/detail/${element.id}`"
+                :to="`/detail/${element.watch_id}`"
                 class="mt-2 hover-underline-animation"
-                >Xem chi tiết</router-link
-              >
+              >Xem chi tiết</router-link>
             </div>
           </template>
         </draggable>
@@ -97,9 +104,9 @@
         class="bg-[#1b1b1b] p-6 shadow-lg w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto"
       >
         <h2 class="text-lg font-semibold mb-4">
-          Xác nhận Duyệt <br />{{ draggedItem.title }}
+          Xác nhận Duyệt <br />{{ draggedItem.watch_id }}
         </h2>
-        <span>ID:{{ draggedItem.id }}</span>
+        <span>ID: {{ draggedItem.request_id }}</span>
         <div class="form-content mb-6">
           <div class="form__group field w-full">
             <input
@@ -610,18 +617,19 @@ const search = () => {
   columns.value.forEach((column) => {
     if (searchTerm === "") {
       // If search is empty, restore original tasks
-      if (column.name === "Chưa duyệt")
+      if (column.name === "Chưa duyệt" && staffStore.unapprovedWatches)
         column.tasks = staffStore.unapprovedWatches.map(mapWatchToTask);
-      if (column.name === "Đã được duyệt")
+      if (column.name === "Đã được duyệt" && staffStore.approvedWatches)
         column.tasks = staffStore.approvedWatches.map(mapWatchToTask);
-      if (column.name === "Không chấp thuận")
+      if (column.name === "Không chấp thuận" && staffStore.deleteWatches)
         column.tasks = staffStore.deleteWatches.map(mapWatchToTask);
     } else {
       // Filter tasks based on search term
       column.tasks = column.tasks.filter(
         (task) =>
-          task.id.toString().toLowerCase().includes(searchTerm) ||
-          task.title.toLowerCase().includes(searchTerm)
+          task.watch_id.toString().toLowerCase().includes(searchTerm) ||
+          task.request_id.toString().toLowerCase().includes(searchTerm) ||
+          task.status.toLowerCase().includes(searchTerm)
       );
     }
   });
@@ -629,10 +637,12 @@ const search = () => {
 
 // Helper function to map watch data to task object
 const mapWatchToTask = (watch) => ({
-  id: watch.watch_id,
-  title: watch.watch_name,
-  price: watch.price,
-  dueDate: new Date(watch.watch_create_date).toLocaleDateString(),
+  watch_id: watch.watch_id,
+  request_id: watch.request_id,
+  note: watch.note,
+  dueDate: new Date(watch.appointment_date).toLocaleDateString(),
+  createdAt: new Date(watch.created_at).toLocaleDateString(),
+  status: watch.status
 });
 
 watch(id, () => {
@@ -651,47 +661,55 @@ const filteredColumns = computed(() => {
 });
 
 onMounted(async () => {
-  const unapprovedWatches = await staffStore.getAllWatch(0);
-  unapprovedWatches.forEach((watch) => {
-    if (watch.seller && watch.seller.member_id) {
-      watchSellerMap.value.set(watch.watch_id, watch.seller.member_id);
-      console.log(
-        "Seller Member ID of Unapprove Watch: " + watch.seller.member_id
-      );
-    } else {
-      console.log(
-        "Seller Member ID not available for watch: " + watch.watch_id
-      );
-    }
-  });
+  const aid = authStore.user_id
+  await staffStore.getRequestFromAdmin(aid);
+  
+  if (staffStore.unapprovedWatches) {
+    staffStore.unapprovedWatches.forEach((watch) => {
+      if (watch.seller && watch.seller.member_id) {
+        watchSellerMap.value.set(watch.watch_id, watch.seller.member_id);
+        console.log(
+          "Seller Member ID of Unapprove Watch: " + watch.seller.member_id
+        );
+      } else {
+        console.log(
+          "Seller Member ID not available for watch: " + watch.watch_id
+        );
+      }
+    });
+  }
 
-  await staffStore.getAllWatch(0);
   await staffStore.getAllWatch(1);
   await staffStore.getAllWatch(2);
   const pendingWatches = await staffStore.getAllWatch(3);
 
   refreshColumns();
-  search(); // Apply initial search (which will show all items if search is empty)
+  search();
 
   console.log("Pending Watches:", JSON.stringify(pendingWatches, null, 2));
-
   columns.value[0].tasks = staffStore.unapprovedWatches.map((watch) => ({
-    id: watch.watch_id,
-    title: watch.watch_name,
-    price: watch.price,
-    dueDate: new Date(watch.watch_create_date).toLocaleDateString(),
+    watch_id: watch.watch_id,
+    request_id: watch.request_id,
+    note: watch.note,
+    dueDate: new Date(watch.appointment_date).toLocaleDateString(),
+    createdAt: new Date(watch.created_at).toLocaleDateString(),
+    status: watch.status
   }));
   columns.value[1].tasks = staffStore.approvedWatches.map((watch) => ({
-    id: watch.watch_id,
-    title: watch.watch_name,
-    price: watch.price,
-    dueDate: new Date(watch.watch_create_date).toLocaleDateString(),
+    watch_id: watch.watch_id,
+    request_id: watch.request_id,
+    note: watch.note,
+    dueDate: new Date(watch.appointment_date).toLocaleDateString(),
+    createdAt: new Date(watch.created_at).toLocaleDateString(),
+    status: watch.status
   }));
   columns.value[2].tasks = staffStore.deleteWatches.map((watch) => ({
-    id: watch.watch_id,
-    title: watch.watch_name,
-    price: watch.price,
-    dueDate: new Date(watch.watch_create_date).toLocaleDateString(),
+    watch_id: watch.watch_id,
+    request_id: watch.request_id,
+    note: watch.note,
+    dueDate: new Date(watch.appointment_date).toLocaleDateString(),
+    createdAt: new Date(watch.created_at).toLocaleDateString(),
+    status: watch.status
   }));
 });
 
@@ -700,28 +718,31 @@ const onDragEnd = (event) => {
     targetColumnName.value = event.to.parentElement
       .querySelector("h2")
       .textContent.trim();
-    draggedItemId.value = event.item
-      .querySelector("p:nth-child(3)")
-      .textContent.trim();
+    draggedItemId.value = event.item.__draggable_context.element.request_id; // Get the watch_id from the dragged element
+
     draggedItem.value = columns.value
       .flatMap((col) => col.tasks)
-      .find((task) => task.id === draggedItemId.value);
+      .find((task) => task.request_id === draggedItemId.value);
 
-    if (targetColumnName.value === "Đã được duyệt") {
-      showApproveModal.value = true;
-    } else if (targetColumnName.value === "Không chấp thuận") {
-      showDeleteModal.value = true;
-      reportContent.value = ""; // Clear previous content
-    } else if (targetColumnName.value === "Chưa duyệt") {
-      staffStore.getAllWatch(0);
-      refreshColumns();
+    if (draggedItem.value) {
+      if (targetColumnName.value === "Đã được duyệt") {
+        showApproveModal.value = true;
+      } else if (targetColumnName.value === "Không chấp thuận") {
+        showDeleteModal.value = true;
+        reportContent.value = "";
+      } else if (targetColumnName.value === "Chưa duyệt") {
+        staffStore.getRequestFromAdmin(authStore.user_id);
+        refreshColumns();
+      }
+    } else {
+      console.error("Không tìm thấy item được kéo");
     }
   }
 };
 
 const handleConfirm = async (type) => {
   if (type === "approve") {
-    await staffStore.approveWatch(draggedItemId.value);
+    await staffStore.approveWatch(authStore.user_id, draggedItemId.value);
     console.log(`ready to update ${draggedItemId.value}`);
     submit()
     showApproveModal.value = false;
@@ -795,7 +816,7 @@ const refreshColumns = () => {
   columns.value[0].tasks = staffStore.unapprovedWatches.map(mapWatchToTask);
   columns.value[1].tasks = staffStore.approvedWatches.map(mapWatchToTask);
   columns.value[2].tasks = staffStore.deleteWatches.map(mapWatchToTask);
-  search(); // Apply search after refreshing columns
+  search();
 };
 
 const formatPriceVND = (price) => {

@@ -31,12 +31,30 @@ export const useStaffStore = defineStore("staff", {
         return [];
       }
     },
-    async approveWatch(watch_id) {
-      console.log('Watch Approved ID:', watch_id);
+    async getRequestFromAdmin(appraiser_id) {
+      console.log('Appraiser ID:', appraiser_id);
       try {
-        const res = await axios.patch(`${api}/staff/approve-watch?watch_id=${watch_id}`);
+        const res = await axios.get(`${api}/staff/get/my-request/${appraiser_id}`);
+        console.log('Requests:', res.data);
+        this.unapprovedWatches = res.data.map(request => ({
+          watch_id: request.appraise_watch,
+          request_id: request.request_id,
+          created_by: request.created_by,
+          appointment_date: request.appointment_date,
+          created_at: request.created_at,
+          note: request.note,
+          status: request.status
+        }));
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    async approveWatch(appraiser_id, request_id) {
+      console.log('Watch Approved ID:', appraiser_id);
+      try {
+        const res = await axios.patch(`${api}/staff/accept/request/${appraiser_id}?request_id=${request_id}`);
         console.log('Watch Approved:', res.data);
-        const watchIndex = this.unapprovedWatches.findIndex(w => w.watch_id === watch_id);
+        const watchIndex = this.unapprovedWatches.findIndex(r => r.request_id === request_id);
         if (watchIndex !== -1) {
           const [watch] = this.unapprovedWatches.splice(watchIndex, 1);
           this.approvedWatches.push(watch);
@@ -62,12 +80,20 @@ export const useStaffStore = defineStore("staff", {
         console.error(err);
       }
     },
-    async unapproveWatch(watch_id) {
-      console.log('Watch Unapproved ID:', watch_id);
+    async unapproveWatch(appraiser_id) {
+      console.log('Watch Unapproved ID:', appraiser_id);
       try {
-        const res = await axios.patch(`${api}/staff/unapprove-watch?watch_id=${watch_id}`);
+        const res = await axios.get(`${api}/staff/get/my-request/${appraiser_id}`);
         console.log('Watch Unapproved:', res.data);
-        const watchIndex = this.approvedWatches.findIndex(w => w.watch_id === watch_id);
+        const watchIndex = this.unapprovedWatches = res.data.map(request => ({
+          watch_id: request.appraise_watch,
+          request_id: request.request_id,
+          created_by: request.created_by,
+          appointment_date: request.appointment_date,
+          created_at: request.created_at,
+          note: request.note,
+          status: request.status
+        }));
         if (watchIndex !== -1) {
           const [watch] = this.approvedWatches.splice(watchIndex, 1);
           this.unapprovedWatches.push(watch);
