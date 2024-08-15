@@ -1162,6 +1162,7 @@ const assignWatch = () => {
   console.log(req.value[selectedWatch.value.watch_id].request_id);
   const timestamp = date.value.getTime();
   adminStore.assignWatchRequest(req.value[selectedWatch.value.watch_id].request_id, selectedAppraiser.value.member_id ,formatTimestamp(timestamp));
+  showAssignModal.value = !showAssignModal.value
 }
 
 const toggleFilter = () => {
