@@ -43,7 +43,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in sortedPendingWatches" :key="item" class="border-t">
+              <tr v-for="(item, index) in pendingWatches" :key="item" class="border-t">
                 <td class="py-4">{{ index + 1 }}</td>
                 <td class="py-4">
                 <span @click="viewOrderDetails(item.order_id)" class="hover-underline-animation">
@@ -243,7 +243,8 @@ const refreshShipping = async () => {
   
   const loadPendingWatches = async () => {
   try {
-    pendingWatches.value = await useStaffStore().getPendingOrder();
+    console.log(auth.user_id);
+    pendingWatches.value = await useStaffStore().getPendingOrder(auth.user_id);
     console.log('Pending watches:', pendingWatches.value);
     
     // Loop through each pending watch and get its order details
@@ -377,7 +378,10 @@ const refreshShipping = async () => {
       isLoading.value = true;
       const user = await useUserStore().loadUser(auth.user_id);
       console.log('Loaded user:', user);
-  
+      console.log('aaa' + order_id);
+      console.log('aaa' + user_id);
+      
+      
       if (user.staff_role !== 'SHIPPER') {
         alert('Bạn không phải là shipper nên không thể sử dụng chức năng này');
         return;

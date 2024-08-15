@@ -601,8 +601,8 @@
                 </div>
               </td>
               <td class="p-2 border-b">{{ req[product.watch_id]?.appraiser_assigned ?? null }}</td>
-              <td class="p-2 border-b">{{  req[product.watch_id]?.appointment_date  ?? null }}</td>
-              <td class="p-2 border-b">{{  req[product.watch_id]?.status ?? null  }}</td>
+              <td class="p-2 border-b">{{ req[product.watch_id]?.appointment_date  ? formatDate(req[product.watch_id]?.appointment_date) : 'Chưa có ngày' }}</td>
+              <td class="p-2 border-b">{{ req[product.watch_id]?.status ?? null  }}</td>
               <td class="p-2 border-b">
                 <button @click="openAssignModal(product)" class="hover-underline-animation">
                   Giao cho Kiểm định viên
@@ -908,9 +908,13 @@
         <!-- Pending Orders Dropdown -->
         <div class="order-select mb-4">
           <h3 class="text-xl font-medium mb-2">Chọn đơn hàng cần giao:</h3>
-          <select v-model="selectedOrder" class="w-full p-2 border rounded bg-black-99">
+          <select 
+            v-model="selectedOrderId" 
+            @change="logSelection" 
+            class="w-full p-2 border rounded bg-black-99"
+          >
             <option value="" disabled>Chọn một đơn hàng</option>
-            <option v-for="order in getShipOrder" :key="order.order_id" :value="order">
+            <option v-for="order in getShipOrder" :key="order.order_id" :value="order.order_id">
               Đơn hàng #{{ order.order_id }} - {{ order.receive_name }}
             </option>
           </select>
@@ -920,7 +924,7 @@
           <button @click="assignShipModal = false" class="border-2 border-secondary p-2">
             Hủy
           </button>
-          <button @click="assignOrderToShipper" :disabled="!selectedOrder" class="th-p-btn">
+          <button @click="assignOrderToShipper" :disabled="!selectedOrderId" class="th-p-btn">
             Xác nhận
           </button>
         </div>
@@ -1254,27 +1258,53 @@ const selectedWatch = ref(null);
 const assignShipModal = ref(false);
 const showShipperOrdersModal = ref(false);
 const selectedShipper = ref(null);
-const selectedOrder = ref(null);
-const pendingOrders = ref([]);
+const selectedOrderId = ref(null);
+const selectedOrder = computed(() => {
+  return getShipOrder.value.find(order => order.order_id === selectedOrderId.value) || null;
+});
+
+const logSelection = () => {
+  console.log('Selected Order ID:', selectedOrderId.value);
+  console.log('Selected Order:', selectedOrder.value);
+};
+
+
 const assignedOrders = ref([]);
 
-const openAssign = async (shipper) => {
+const openAssign = async (shipper, order) => {
   assignShipModal.value = true;
   selectedShipper.value = shipper;
-  pendingOrders.value = []; // Replace with actual API call
+  selectedOrderId.value = order;
 };
 
 const openDetail = async (shipper) => {
   showShipperOrdersModal.value = true;
   selectedShipper.value = shipper;
+  console.log(selectedOrder.value);
   assignedOrders.value = []; // Replace with actual API call
 };
 
 const openAssignModal = async (watch) => {
   selectedWatch.value = watch;
   showAssignModal.value = true;
-
   console.log("RRRR",watch);
+};
+
+const assignOrderToShipper = () => {
+  console.log('assignOrderToShipper called');
+  console.log('Selected Order ID:', selectedOrderId.value);
+  console.log('Selected Order:', selectedOrder.value);
+  console.log('Selected Shipper:', selectedShipper.value.member_id);
+  
+    if (selectedOrder.value) {
+      // Your logic to assign the order to the shipper
+      useAdminStore().assignOrderToShipper(selectedShipper.value.member_id ,selectedOrderId.value)
+      console.log('Assigning order:', selectedOrderId.value, 'to shipper:', selectedShipper.value.member_id);
+    } else {
+      console.log('No order selected');
+    }
+  
+
 };
 
 function setGreeting() {
@@ -1384,6 +1414,10 @@ const getAppraisers = computed(() => {
 });
 
 const getShipOrder = computed(() => {
+  console.log(adminStore.orders.filter(order => 
+    order.state === 'PENDING'
+  ));
+  
   return adminStore.orders.filter(order => 
     order.state === 'PENDING'
   );

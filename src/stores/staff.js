@@ -102,16 +102,17 @@ export const useStaffStore = defineStore("staff", {
         console.error(err);
       }
     },
-    async getPendingOrder() {
+    async getPendingOrder(shipper_id) {
       try {
-        const res = await axios.get(`${api}/staff/get/pending-order`);
+        console.log('aaaa' + shipper_id);
+        const res = await axios.get(`${api}/staff/get/my-assigned-order/${shipper_id}`);
         console.log(res.data);
         return res.data;  
       } catch (err) {
         console.error(err);
         return [];
       }
-    }, 
+    },
     async shipOrderByShipper(order_id, user_id) {
       try {
         const res = await axios.post(`${api}/staff/ship/order?oid=${order_id}&id=${user_id}`);

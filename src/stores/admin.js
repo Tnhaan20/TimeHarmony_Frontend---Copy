@@ -16,12 +16,48 @@ export const useAdminStore = defineStore("admin", {
     orders: [],
     nullOrders: [],
     topThreeWatch: [],
+    shipper: '',
     isLoading: false,
     error: null,
     banSubscription: null
   }),
 
   actions: {
+    async assignOrderToShipper(shipperID, orderID) {
+      const token = useAuthStore().token;
+      if (!token) {
+        console.error("No authentication token available");
+        return;
+      }
+      
+      this.isLoading = true;
+      this.error = null;
+    
+      try {
+        console.log(`Assigning order ${orderID} to shipper ${shipperID}`);
+        console.log("Token being used:", token);
+        console.log("Request URL:", `${api}/admin/assign/shipper?sid=${shipperID}&oid=${orderID}`);
+
+        const response = await axios.post(
+          `${api}/admin/assign/shipper?sid=${shipperID}&oid=${orderID}`,
+          {}, // Empty object as the request body
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Assignment response:", response.data);
+        await this.getOrders(); // Refresh orders after assignment
+        return response.data;
+      } catch (error) {
+        console.error("Error assigning order to shipper:", error);
+        this.error = error.response?.data?.message || error.message || "Failed to assign order to shipper";
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
     async getMembers() {
       const token = useAuthStore().token;
       if (!token) return;
@@ -61,6 +97,28 @@ export const useAdminStore = defineStore("admin", {
       } catch (error) {
         console.error("Error fetching products:", error);
         this.error = error.message || "Failed to fetch products";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async getOrdersByState(state) {
+      const token = useAuthStore().token;
+      if (!token) return;
+      
+      this.isLoading = true;
+      this.error = null;
+
+      try {
+        const response = await axios.get(`${api}/admin/get/orders-by-state/${state}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        this.orders = response.data;
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        this.error = error.message || "Failed to fetch orders";
       } finally {
         this.isLoading = false;
       }
