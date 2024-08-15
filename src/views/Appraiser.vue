@@ -679,10 +679,6 @@ onMounted(async () => {
     });
   }
 
-  await staffStore.getAllWatch(1);
-  await staffStore.getAllWatch(2);
-  const pendingWatches = await staffStore.getAllWatch(3);
-
   refreshColumns();
   search();
 
