@@ -36,19 +36,47 @@ export const useStaffStore = defineStore("staff", {
       try {
         const res = await axios.get(`${api}/staff/get/my-request/${appraiser_id}`);
         console.log('Requests:', res.data);
-        this.unapprovedWatches = res.data.map(request => ({
-          watch_id: request.appraise_watch,
-          request_id: request.request_id,
-          created_by: request.created_by,
-          appointment_date: request.appointment_date,
-          created_at: request.created_at,
-          note: request.note,
-          status: request.status
-        }));
+    
+        this.unapprovedWatches = res.data
+          .filter(request => request.status === 'PROCESSING')
+          .map(request => ({
+            watch_id: request.appraise_watch,
+            request_id: request.request_id,
+            created_by: request.created_by,
+            appointment_date: request.appointment_date,
+            created_at: request.created_at,
+            note: request.note,
+            status: request.status
+          }));
+    
+        this.approvedWatches = res.data
+          .filter(request => request.status === 'COMPLETED')
+          .map(request => ({
+            watch_id: request.appraise_watch,
+            request_id: request.request_id,
+            created_by: request.created_by,
+            appointment_date: request.appointment_date,
+            created_at: request.created_at,
+            note: request.note,
+            status: request.status
+          }));
+    
+        this.deleteWatches = res.data
+          .filter(request => request.status === 'FAILED')
+          .map(request => ({
+            watch_id: request.appraise_watch,
+            request_id: request.request_id,
+            created_by: request.created_by,
+            appointment_date: request.appointment_date,
+            created_at: request.created_at,
+            note: request.note,
+            status: request.status
+          }));
+    
       } catch (err) {
         console.error(err);
       }
-    },
+    },    
     async approveWatch(appraiser_id, request_id) {
       console.log('Watch Approved ID:', appraiser_id);
       try {
