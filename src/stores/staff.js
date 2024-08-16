@@ -77,16 +77,11 @@ export const useStaffStore = defineStore("staff", {
         console.error(err);
       }
     },    
-    async approveWatch(appraiser_id, request_id) {
-      console.log('Watch Approved ID:', appraiser_id);
+    async approveWatch(id) {
+      console.log('Watch Approved ID:', id);
       try {
-        const res = await axios.patch(`${api}/staff/accept/request/${appraiser_id}?request_id=${request_id}`);
+        const res = await axios.patch(`${api}/staff/approve-watch?watch_id=${id}`);
         console.log('Watch Approved:', res.data);
-        const watchIndex = this.unapprovedWatches.findIndex(r => r.request_id === request_id);
-        if (watchIndex !== -1) {
-          const [watch] = this.unapprovedWatches.splice(watchIndex, 1);
-          this.approvedWatches.push(watch);
-        }
       } catch (err) {
         console.error(err);
       }
@@ -173,39 +168,17 @@ export const useStaffStore = defineStore("staff", {
         return [];
       }
     },
-    updateWatch(id,data){
-      axios.patch(`${api}/staff/update/fields/${id}`,{
-        price: data.price,
-        brand: data.brand,
-        series: data.series,
-        model: data.model,
-        gender: data.gender,
-        style: data.style,
-        subclass: data.subclass,
-        madelabel: data.madelabel,
-        calender: data.calender,
-        feature: data.feature,
-        movement: data.movement,
-        function: data.function,
-        engine: data.engine,
-        waterresistant: data.waterresistant,
-        bandcolor: data.bandcolor,
-        bandtype: data.bandtype,
-        clasp: data.clasp,
-        bracelet: data.bracelet,
-        dialtype: data.dialtype,
-        dialcolor: data.dialcolor,
-        crystal: data.crystal,
-        secondmaker: data.secondmaker,
-        bezel: data.bezel,
-        bezelmaterial: data.bezelmaterial,
-        caseback: data.caseback,
-        casedimension: data.casedimension,
-        caseshape: data.caseshape,
-      })
-      .then((res)=>{
-        console.log(res); 
-      })
-    }
+    updateWatch(id, data) {
+      axios.patch(`${api}/staff/update/fields/${id}`, data)
+        .then((res) => {
+          console.log('Update successful:', res.data);
+        })
+        .catch((err) => {
+          console.error('Update failed:', err.response ? err.response.data : err.message);
+          if (err.response) {
+            console.log('Full error response:', err.response);
+          }
+        });
+    }    
   },
 });

@@ -738,9 +738,9 @@ const onDragEnd = (event) => {
 
 const handleConfirm = async (type) => {
   if (type === "approve") {
-    await staffStore.approveWatch(authStore.user_id, draggedItemId.value);
     console.log(`ready to update ${draggedItemId.value}`);
     submit()
+    await staffStore.approveWatch(draggedItem.value.watch_id);
     showApproveModal.value = false;
   } else if (type === "unapprove") {
     if (!reportContent.value.trim()) {
@@ -824,10 +824,10 @@ const formatPriceVND = (price) => {
 };
 
 const submit = () => {
-  console.log('submit updata data.');
-  
+  console.log('submit update data.');
+
   const data = {
-    price: watchData.price,
+    price: watchData.price.toString(),
     brand: watchData.brand,
     series: watchData.series,
     model: watchData.model,
@@ -855,7 +855,11 @@ const submit = () => {
     casedimension: watchData.casedimension,
     caseshape: watchData.case_shape,
   };
-  useStaffStore().updateWatch(draggedItemId.value, data);
+
+  console.log(data);
+  
+
+  useStaffStore().updateWatch(draggedItem.value.watch_id, data);
 };
 </script>
 
