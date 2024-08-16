@@ -186,7 +186,8 @@
             <h3 class="text-xl mb-4">Tính năng</h3>
             <div class="form-content mb-4">
               <div class="form__group field">
-                <input type="text" class="form__field" placeholder="Lịch" />
+                <input type="text" class="form__field" placeholder="Lịch" 
+                v-model="watchData.calender"/>
                 <label class="form__label">Lịch</label>
               </div>
             </div>
@@ -196,6 +197,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.feature"
                 />
                 <label class="form__label">Tính năng</label>
               </div>
@@ -206,6 +208,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.movement"
                 />
                 <label class="form__label">Hoạt động</label>
               </div>
@@ -216,6 +219,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.function"
                 />
                 <label class="form__label">Chức năng</label>
               </div>
@@ -226,6 +230,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.engine"
                 />
                 <label class="form__label">Động cơ</label>
               </div>
@@ -236,6 +241,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.water_resistant"
                 />
                 <label class="form__label">Kháng nước</label>
               </div>
@@ -250,13 +256,15 @@
                   type="text"
                   class="form__field"
                   placeholder="Thương hiệu"
+                  v-model="watchData.dial_type"
                 />
                 <label class="form__label">Loại quay số</label>
               </div>
             </div>
             <div class="form-content mb-4">
               <div class="form__group field">
-                <input type="text" class="form__field" placeholder="Series" />
+                <input type="text" class="form__field" placeholder="Series" 
+                v-model="watchData.dial_color"/>
                 <label class="form__label">Màu sắc</label>
               </div>
             </div>
@@ -266,6 +274,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.crystal"
                 />
                 <label class="form__label">Pha lê</label>
               </div>
@@ -276,6 +285,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.second_makers"
                 />
                 <label class="form__label">Nhà sản xuất thứ hai</label>
               </div>
@@ -288,6 +298,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.band_color"
                 />
                 <label class="form__label">Màu sắc</label>
               </div>
@@ -298,6 +309,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.band_type"
                 />
                 <label class="form__label">Loại dây</label>
               </div>
@@ -308,6 +320,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.clasp"
                 />
                 <label class="form__label">Móc cài</label>
               </div>
@@ -318,6 +331,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.bracelet"
                 />
                 <label class="form__label">Vòng đeo</label>
               </div>
@@ -329,6 +343,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.bezel"
                 />
                 <label class="form__label">Khung viền</label>
               </div>
@@ -339,6 +354,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.bezel_material"
                 />
                 <label class="form__label">Chất liệu khung viền</label>
               </div>
@@ -349,6 +365,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.case_back"
                 />
                 <label class="form__label">Mặt sau</label>
               </div>
@@ -359,6 +376,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.casedimension"
                 />
                 <label class="form__label">Kích thước</label>
               </div>
@@ -369,6 +387,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.case_shape"
                 />
                 <label class="form__label">Hình dạng vỏ</label>
               </div>
@@ -380,6 +399,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.brand"
                 />
                 <label class="form__label">Thương hiệu</label>
               </div>
@@ -390,6 +410,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.series"
                 />
                 <label class="form__label">Dòng sản phẩm</label>
               </div>
@@ -400,6 +421,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.model"
                 />
                 <label class="form__label">Mẫu</label>
               </div>
@@ -410,6 +432,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.style_type"
                 />
                 <label class="form__label">Phong cách</label>
               </div>
@@ -420,6 +443,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.sub_class"
                 />
                 <label class="form__label">Lớp phụ</label>
               </div>
@@ -430,6 +454,7 @@
                   type="text"
                   class="form__field"
                   placeholder="Tính năng"
+                  v-model="watchData.made_label"
                 />
                 <label class="form__label">Nhãn thực hiện</label>
               </div>
@@ -511,6 +536,8 @@ if (useUserStore().role != "ROLE_STAFF") {
   router.push("/");
 }
 
+
+
 const id = ref("");
 const authStore = useAuthStore();
 const viewMode = ref("kanban");
@@ -581,6 +608,50 @@ const watchData = reactive({
   casedimension: "",
   case_shape: "",
 });
+
+const clear = () => {
+  (watchData.name = ""),
+    (watchData.price = ""),
+    (watchData.description = ""),
+    (watchData.brand = ""),
+    (watchData.series = ""),
+    (watchData.model = ""),
+    (watchData.gender = ""),
+    (watchData.style_type = ""),
+    (watchData.sub_class = ""),
+    (watchData.made_label = ""),
+    (watchData.calender = ""),
+    (watchData.feature = ""),
+    (watchData.movement = ""),
+    (watchData.function = ""),
+    (watchData.engine = ""),
+    (watchData.water_resistant = ""),
+    (watchData.band_color = ""),
+    (watchData.band_type = ""),
+    (watchData.clasp = ""),
+    (watchData.bracelet = ""),
+    (watchData.dial_type = ""),
+    (watchData.dial_color = ""),
+    (watchData.crystal = ""),
+    (watchData.second_makers = ""),
+    (watchData.bezel = ""),
+    (watchData.bezel_material = ""),
+    (watchData.case_back = ""),
+    (watchData.casedimension = ""),
+    (watchData.case_shape = "");
+};
+
+const unisexGender = () => {
+  watchData.gender = "Unisex";
+};
+
+const maleGender = () => {
+  watchData.gender = "Male";
+};
+
+const femaleGender = () => {
+  watchData.gender = "Female";
+};
 
 const validatePrice = () => {
   const price = Number(watchData.price);
@@ -802,6 +873,7 @@ const handleConfirm = async (type) => {
 const handleCancel = (type) => {
   if (type === "approve") {
     showApproveModal.value = false;
+    clear()
   } else if (type === "unapprove") {
     showDeleteModal.value = false;
   }
@@ -860,6 +932,7 @@ const submit = () => {
   
 
   useStaffStore().updateWatch(draggedItem.value.watch_id, data);
+  clear()
 };
 </script>
 
