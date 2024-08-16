@@ -81,12 +81,12 @@
             {{ watchStore.watch_data.name }}
           </h1>
           <i
-            :class="[
-              'fa-sharp cursor-pointer',
-              isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark',
-              'bookmark-icon',
-              { active: isBookmarked },
-            ]"
+          :class="[
+            'fa-sharp cursor-pointer',
+            isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark',
+            'bookmark-icon',
+            { active: isBookmarked },
+          ]"
             @click="toggleBookmark"
             :style="{
               pointerEvents: isWatchAvailable ? 'auto' : 'none',
@@ -94,6 +94,9 @@
             }"
           ></i>
         </div>
+        <h2 class="text-base italic font-semibold mb-2">
+          {{ approveMessage }}
+        </h2>
         <div class="mb-4">
           <span class="text-xl font-thin text-secondary">
             {{ formatPriceVND(watchStore.watch_data.price) }}</span
@@ -165,35 +168,7 @@
         </div>
       </div>
     </div>
-    <div class="mt-8 border-t border-secondary pt-4">
-      <div class="mb-5">
-        <span class="font-semibold text-xl">Được kiểm định bởi</span>
-      </div>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center w-full">
-          <table class="w-full border-collapse table">
-            <thead class="table-header">
-              <tr class="bg-[#494949] text-primary">
-                <th class="pb-2">Kiểm định viên</th>
-                <th class="pb-2">Email</th>
-                <th class="pb-2 pl-2">SĐT</th>
-                <th class="pb-2 pl-2">Giá</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-t">
-                <td class="py-4">Nhan</td>
-                <td class="py-4">Nhan@mgail</td>
-                <td class="py-4 pl-2">0365669999</td>
-                <td class="py-4 pl-2">{{ formatPriceVND(100000000) }}</td>
-              </tr>
-            </tbody>
-          </table>
-          
-        </div> 
-        
-      </div>
-    </div>
+    
 
     <div class="p-8 border-t border-secondary mt-6 max-w-4xl mx-auto">
       <section class="mb-8">
@@ -466,6 +441,12 @@ const popupMessage = ref("");
 const showProductDetails = ref(true);
 
 const activeSection = ref(""); // Biến điều khiển phần nội dung hiển thị
+
+const approveMessage = computed(() => {
+  if (watchStore.watch_data.state === 0) return 'Đồng hồ chưa được kiểm định'
+  else if (watchStore.watch_data.state === 1) return 'Đồng hồ đã được kiểm định bởi Nhân'
+  return '' 
+})
 
 const toggleSection = (section) => {
   activeSection.value = activeSection.value === section ? "" : section;
