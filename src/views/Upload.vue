@@ -86,6 +86,44 @@
           >
         </div>
       </div>
+
+      <div class="form__group field flex flex-col w-96 justify-start">
+        <div class="mydict">
+          <div class="form">
+            <label class="mb-3 text-[#9b9b9b]">Hình thức kiểm định</label>
+            <div class="select pb-4 gender-select">
+              <label>
+                <input
+                  type="radio"
+                  name="radio"
+                  checked
+                  @click="unisexGender"
+                  id="defaut-gender"
+                  value="Unisex"
+                />
+                <span class="select-op">Offline</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="radio"
+                  @click="maleGender"
+                  value="Male"
+                />
+                <span class="select-op">Online</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form__group field flex w-96 justify-start">
+        <VueDatePicker
+          v-model="date"
+          placeholder="Chọn ngày muốn kiểm định"
+          :format="formatDate"
+          :enable-time-picker="false"
+        ></VueDatePicker>
+      </div>
       <!-- <div class="form-content">
         <div class="form__group field w-96">
           <input
@@ -345,44 +383,7 @@
           <label for="price" class="form__label">Mẫu</label>
         </div>
       </div>
-      <div class="form__group field flex flex-col w-96 justify-start">
-        <div class="mydict">
-          <div class="form">
-            <label class="mb-3 text-[#9b9b9b]">Giới tính</label>
-            <div class="select pb-4 gender-select">
-              <label>
-                <input
-                  type="radio"
-                  name="radio"
-                  checked
-                  @click="unisexGender"
-                  id="defaut-gender"
-                  value="Unisex"
-                />
-                <span class="select-op">Phi giới</span>
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="radio"
-                  @click="maleGender"
-                  value="Male"
-                />
-                <span class="select-op">Nam</span>
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="radio"
-                  @click="femaleGender"
-                  value="Female"
-                />
-                <span class="select-op">Nữ</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
+      
       <div class="form-content">
         <div class="form__group field w-96">
           <input
@@ -415,15 +416,6 @@
           />
           <label for="price" class="form__label">Nhãn thực hiện</label>
         </div>
-      </div> -->
-      <!-- <h3 class="text-3xl">Chọn ngày kiểm định</h3>
-
-      <div class="flex w-3/4 px-20 justify-start">
-        <VueDatePicker
-          v-model="date"
-          placeholder="Chọn ngày muốn kiểm định"
-          :format="formatDate"
-        ></VueDatePicker>
       </div> -->
       <p v-if="dateWarning" class="text-red-500">{{ dateWarning }}</p>
       <br />
@@ -503,10 +495,8 @@ const formatDate = (date) => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  const hour = date.getHours();
-  const minute = date.getMinutes();
 
-  return `${day}/${month}/${year} vào lúc ${hour}:${minute}`;
+  return `${day}/${month}/${year}`;
 };
 console.log(formatDate(date.value));
 const isPopupVisible = ref(false);
