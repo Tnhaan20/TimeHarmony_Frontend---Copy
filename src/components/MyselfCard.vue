@@ -11,7 +11,7 @@
           <strong class="product-name text-primary">{{ productName }}</strong>
           <span class="price">Giá {{ formattedPrice }}</span>
           <br>
-          <span class="state" :style="{ color: stateColor }">● {{ checkState }}</span>
+          <span class="state" :style="{ color: stateColors[props.state] }">● {{ stateLabels[props.state] }}</span>
         </div>
       </router-link>
       <button v-if="props.state==1 || props.state==0" @click="confirmDeleteWatch" class="border-2 border-primary h-12 mt-5 w-full">Xoá đồng hồ</button>
@@ -87,22 +87,44 @@ const handleDelete = async () => {
   }
 };
 
-const checkState = computed(() => {
-  if (props.state === 0)
-    return 'Đang trong quá trình duyệt'
-  else if (props.state === 1)
-    return 'Đã được duyệt'
-  else
-    return 'Đã bị xoá'
-});
+// const checkState = computed(() => {
+//   if (props.state === 0)
+//     return 
+//   else if (props.state === 1)
+//     return 
+//   else
+//     return 
+// });
+
+const stateLabels = {
+  0: 'Đang trong quá trình duyệt',
+  1: 'Đã được duyệt',
+  2: 'Đã bị xoá',
+  3: "Chờ giao",
+  4: "Đang giao",
+  5: "Đang thanh toán",
+  6: "Hoàn tất",
+  7: "Đã giao",
+}
+
+const stateColors = {
+  0: '#f2963f',
+  1: '#23d18b',
+  2: '#fe3839',
+  3: "Chờ giao",
+  4: "Đang giao",
+  5: "Đang thanh toán",
+  6: "Hoàn tất",
+  7: "Đã giao",
+}
 
 const stateColor = computed(() => {
   if (props.state === 0)
-    return '#f2963f'
+    return 
   else if (props.state === 1)
-    return '#23d18b'
+    return 
   else
-    return '#fe3839'
+    return 
 });
 
 const formatPriceVND = (price) => {

@@ -462,7 +462,9 @@
                     >
                       {{ member.staff_role ? roleLabels[member.staff_role] : roleLabels[member.user_log_info.authorities.authority] }}
                     </div>
-                    <div v-else>
+                    <div v-else 
+                    class="cursor-pointer hover-underline-animation"
+                    @click="openPromoteModal(member)">
                       {{ member.staff_role ? roleLabels[member.staff_role] : roleLabels[member.user_log_info.authorities.authority] }}
                     </div>
                   </td>
