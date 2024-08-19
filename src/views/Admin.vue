@@ -1,4 +1,6 @@
 <template>
+  <div v-if="checkAdmin(authStore.user_id)" >
+
   <div class="h-screen">
     <div v-if="isLoading" class="overlay">
       <div class="loader-container">
@@ -981,6 +983,19 @@
   </div>
 
 </div>
+</div>
+
+<div v-else>
+  <div class="flex justify-center items-center gap-6 text-center title">
+      <span class="text-border">4</span>
+      <clock/>
+      <span class="text-border">4</span>
+  </div>
+  <div class="flex flex-col justify-center items-center gap-5">
+      <span>Oops, không có gì ở đây hết quay về <router-link to="/" class="hover-underline-animation">Trang chủ</router-link> đi !</span>
+  </div>
+
+</div>
 
 </template>
 
@@ -995,6 +1010,8 @@ import router from "../router";
 import { useMailStore } from "../stores/mail";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import Clock from '../components/Clock.vue'
+
 
 const req = ref({});
 
@@ -1108,6 +1125,34 @@ const roleLabels = {
   APPRAISER: "Chuyên viên kiểm định",
   ROLE_ADMIN: "Quản trị viên",
 };
+
+const isAdmin = ref(false)
+
+// Check user role
+const userStore = useUserStore();
+const authStore = useAuthStore();
+if (
+  userStore.role !== "ROLE_ADMIN" &&
+  authStore.user_id !== import.meta.env.VITE_ADMIN_USERID
+) {
+  console.log("Not ADMIN");
+  router.push("/");
+}
+
+const checkAdmin = (userId) => {
+  if(useUserStore().loadUser(userId).then(userStore.role==='ROLE_ADMIN')){
+    isAdmin.value = true;
+    console.log(isAdmin.value);
+    return router.push('/admin')
+  }
+  else{
+    isAdmin.value = false
+    router.push('/')
+  }
+
+}
+
+console.log(checkAdmin(authStore.user_id));
 
 
 // Initialize the store
@@ -1393,16 +1438,7 @@ onMounted(async () => {
     error.value = "Failed to fetch initial data. Please try refreshing the page.";
   }
 });
-// Check user role
-const userStore = useUserStore();
-const authStore = useAuthStore();
-if (
-  userStore.role !== "ROLE_ADMIN" &&
-  authStore.user_id !== import.meta.env.VITE_ADMIN_USERID
-) {
-  console.log("Not ADMIN");
-  router.push("/");
-}
+
 
 const getMemberName = (memberId) => {
   const member = adminStore.members.find(m => m.member_id === memberId);

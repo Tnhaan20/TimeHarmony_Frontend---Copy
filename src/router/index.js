@@ -97,6 +97,7 @@ const router = createRouter({
       component: () => import('../views/Admin.vue').catch(err => {
         console.error(err);
       }),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/change-password',
@@ -246,7 +247,6 @@ router.beforeEach(async (to, from, next) => {
       console.log(useUserStore().isVerify);
     }
     
-    // Subscribe to messages if authenticated and not already subscribed
     if (!chatStore.subscription) {
       chatStore.subscribeToMessages();
     }
@@ -255,17 +255,34 @@ router.beforeEach(async (to, from, next) => {
       adminStore.subscribeToBan()
     }
     
-    // Redirect authenticated users away from login, signup, and forgot pages
     if (['/login', '/signup', '/forgot'].includes(to.path)) {
       return next('/');
     }
-    
+
+    // Check if the route requires admin access
+    if (to.meta.requiresAdmin) {
+      if (userStore.role === 'ROLE_ADMIN') {
+        next(); // Allow access to admin page
+      } else {
+        next('/error'); // Redirect to error page for non-admins
+      }
+    } else if (userStore.role === 'ROLE_ADMIN' && !to.path.startsWith('/admin')) {
+      next('/admin'); // Redirect admins to admin page if they try to access non-admin pages
     } else {
-    // Unsubscribe from messages if not authenticated
+      next(); // Proceed for non-admin routes
+    }
+    
+  } else {
     chatStore.unsubscribeFromMessages();
     adminStore.unsubscribeFromBan()
+
+    // If the route requires admin access and user is not logged in, redirect to login
+    if (to.meta.requiresAdmin) {
+      next('/login');
+    } else {
+      next();
+    }
   }
-  next();
 });
 
 // router.afterEach(()=>{
