@@ -578,6 +578,7 @@
                 <th class="p-2">Thời gian được kiểm định</th>
                 <th class="p-2">Trạng thái</th>
                 <th class="p-2">Hành động</th>
+                <th class="p-2">Xoá</th>
                 
               </tr>
             </thead>
@@ -607,6 +608,9 @@
                 <button @click="openAssignModal(product)" class="hover-underline-animation">
                   Giao cho Kiểm định viên
                 </button>
+              </td>
+              <td>
+                <button class="hover-underline-animation-r">Xoá</button>
               </td>
             </tr>
             </tbody>
