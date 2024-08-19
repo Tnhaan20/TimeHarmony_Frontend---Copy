@@ -72,6 +72,18 @@ export const useStaffStore = defineStore("staff", {
             note: request.note,
             status: request.status
           }));
+
+          this.deleteWatches = res.data
+          .filter(request => request.status === 'EXPIRED')
+          .map(request => ({
+            watch_id: request.appraise_watch,
+            request_id: request.request_id,
+            created_by: request.created_by,
+            appointment_date: request.appointment_date,
+            created_at: request.created_at,
+            note: request.note,
+            status: request.status
+          }));
     
       } catch (err) {
         console.error(err);
