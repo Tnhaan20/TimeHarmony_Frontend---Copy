@@ -4,7 +4,7 @@
   <div class="h-screen">
     <div v-if="isLoading" class="overlay">
       <div class="loader-container">
-        <div class="loader">
+        <div class="loader">num
           <div class="loaderBar"></div>
         </div>
       </div>
@@ -145,16 +145,27 @@
     </div>
   </div>
         </div>
+
+        <div class="mb-4">
+          <label for="month-select" class="mr-2">Chọn tháng:</label>
+          <input 
+            type="month"
+            id="month-select" 
+            v-model="selectedMonth" 
+            @change="updateOrderStats"
+            class="p-2 border bg-black-99 rounded"
+          >
+        </div>
        
         <div class="grid grid-cols-3 gap-4 mt-5 mb-6">
           <div class="back p-4 rounded-lg shadow">
-            <p class="text-xl font-medium">Doanh Thu Tổng: {{ currency(totalRevenue) }}</p>
+            <p class="text-xl font-medium">Số lượng đơn đặt thành công: {{ numSuccessOrder }}</p>
           </div>
           <div class="back p-4 rounded-lg shadow">
-            <p class="text-xl font-medium">Chi Phí Tổng: {{ currency(totalCost) }}</p>
+            <p class="text-xl font-medium">Chi Phí Tổng: {{ currency(totalAmountOrder) }}</p>
           </div>
           <div class="back p-4 rounded-lg shadow">
-            <p class="text-xl font-medium">Lợi Nhuận Tổng: {{ currency(totalProfit) }}</p>
+            <p class="text-xl font-medium">Lợi Nhuận Tổng: {{ currency(totalAmountProfit) }}</p>
           </div>
         </div>
         <div v-if="showCharts" class="grid  grid-cols-2 gap-6 mb-6">
@@ -1016,6 +1027,7 @@ import Clock from '../components/Clock.vue'
 const req = ref({});
 
 onMounted(() => {
+  updateOrderStats() 
   useAdminStore().getRequestWatches()
     .then(response => {
       req.value = response.reduce((map, watch) => {
@@ -1874,9 +1886,34 @@ const totalCost = computed(() => {
   }
 });
 
+const selectedMonth = ref(new Date().toISOString().slice(0, 7));
+const numSuccessOrder = ref(0);
+const totalAmountOrder = ref(0)
+const totalAmountProfit = ref(0)
+
+
+const updateOrderStats = async () => {
+      if (selectedMonth.value) {
+        try {
+          const num = await adminStore.getNumOrderSuccess(selectedMonth.value)
+          const order = await adminStore.getTotalAmountOrderSuccess(selectedMonth.value)
+          const profit = await adminStore.getTotalProfitOrderSuccess(selectedMonth.value)
+          numSuccessOrder.value = num
+          totalAmountOrder.value = order
+          totalAmountProfit.value = profit
+          console.log(`Số đơn đặt thành công trong tháng ${selectedMonth.value}: ${num}`)
+        } catch (error) {
+          console.error('Lỗi khi lấy số đơn đặt thành công:', error)
+          numSuccessOrder.value = 0 // Đặt về 0 nếu có lỗi
+        }
+      }
+    }
+
+
+
 const totalRevenue = computed(() => {
   try {
-    return filteredOrders.value.reduce((sum, order) => sum + (order?.total_price || 0), 0);
+    return 1
   } catch (err) {
     console.error("Error calculating totalRevenue:", err);
     error.value = "Error calculating total revenue. Please try again.";
